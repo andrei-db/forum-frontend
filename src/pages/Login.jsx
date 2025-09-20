@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { api } from "../api/client";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
     const [form, setForm] = useState({ username: "", password: "" });
     const [error, setError] = useState("");
     const nav = useNavigate();
+    const { login } = useAuth();
 
     const submit = async (e) => {
         e.preventDefault();
@@ -15,7 +17,7 @@ export default function Login() {
                 method: "POST",
                 body: JSON.stringify(form),
             });
-            localStorage.setItem("token", data.token);
+            login(data.token, data.user);
             nav("/");
         } catch (err) {
             setError(err.message);

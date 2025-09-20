@@ -1,33 +1,20 @@
-import { useEffect, useState } from "react";
-import { api } from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
-    const [me, setMe] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
+  if (loading) return <p className="text-center">Loading...</p>;
 
-        if (token) {
-            api("/me")
-                .then(setMe)
-                .catch(() => setMe(null))
-                .finally(() => setLoading(false));
-        } else {
-            setLoading(false);
-        }
-    }, []);
-
-    if (loading) return <p className="text-center">Loading...</p>;
-
-    return (
-        <div>
-            <h2 className="text-2xl font-bold mb-4">Acasă</h2>
-            {me ? (
-                <p className="text-lg">👋 Bun venit, <b>{me.username}</b>!</p>
-            ) : (
-                <p className="text-gray-600">Ești vizitator. <br /> Loghează-te pentru mai multe opțiuni.</p>
-            )}
-        </div>
-    );
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Acasă</h2>
+      {user ? (
+        <p className="text-lg">👋 Bun venit, <b>{user.username}</b>!</p>
+      ) : (
+        <p className="text-gray-600">
+          Ești vizitator. <br /> Loghează-te pentru mai multe opțiuni.
+        </p>
+      )}
+    </div>
+  );
 }

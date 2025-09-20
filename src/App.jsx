@@ -6,35 +6,38 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Header from "./components/Header";
+import { AuthProvider } from "./context/AuthContext";
 export default function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Header />
-      <div className="max-w-2xl mx-auto p-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+        <Header />
+        <div className="max-w-2xl mx-auto p-4">
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-          <Route
-            path="/login"
-            element={
-              <Guest>
-                <Login />
-              </Guest>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <Guest>
-                <Register />
-              </Guest>
-            }
-          />
+            <Route
+              path="/login"
+              element={
+                <Guest>
+                  <Login />
+                </Guest>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <Guest>
+                  <Register />
+                </Guest>
+              }
+            />
 
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

@@ -1,39 +1,40 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { api } from "../api/client";
+import { useAuth } from "../context/AuthContext";
 export default function Navbar() {
-    const nav = useNavigate();
-    const authed = !!localStorage.getItem("token");
-    const [me, setMe] = useState(null);
+  const nav = useNavigate();
+  const { user, logout } = useAuth();
 
-    useEffect(() => {
-        if (authed) {
-            api("/me")
-                .then(setMe)
-                .catch(() => setMe(null));
-        }
-    }, [authed]);
+  return (
+    <nav className="flex justify-between items-center p-4 bg-white shadow text-gray-700">
+      <Link to="/" className="text-lg font-bold">
+        Forum MVP
+      </Link>
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        nav("/login");
-    };
-
-    return (
-        <nav className="bg-white text-black flex justify-between px-5 py-4">
-            <Link to="/">Forum</Link>
-            {authed ? (
-                <div>
-                    <span className="me-5">Hi, {me?.username}!</span>
-                    <button onClick={logout}>Logout</button>
-                </div>
-
-            ) : (
-                <div>
-                    <Link to="/login" >Login</Link>
-                    <Link to="/register" className="ms-3">Register</Link>
-                </div>
-            )}
-        </nav>
-    );
+      <div className="flex items-center gap-4">
+        {user ? (
+          <>
+            <span className="text-gray-700">👋 Hi, {user.username}!</span>
+            <button
+              onClick={() => {
+                logout();
+                nav("/login");
+              }}
+              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">
+              Login
+            </Link>
+            <Link to="/register">
+              Register
+            </Link>
+          </>
+        )}
+      </div>
+    </nav>
+  );
 }
