@@ -1,30 +1,40 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import './App.css'
-import Header from "./components/Header";
-import Protected from "./components/Protected";
+import Navbar from "./components/Navbar";
+import { Guest } from "./components/Protected";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Navbar from "./components/Navbar";
-
+import Header from "./components/Header";
 export default function App() {
-  const token = localStorage.getItem("token");
-
   return (
-    <>
-     <BrowserRouter>
+    <BrowserRouter>
       <Navbar />
       <Header />
-      <div style={{ maxWidth: 600, margin: "1rem auto" }}>
+      <div className="max-w-2xl mx-auto p-4">
         <Routes>
-          <Route path="/" element={<Protected authed={!!token}><Home /></Protected>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Home />} />
+
+          <Route
+            path="/login"
+            element={
+              <Guest>
+                <Login />
+              </Guest>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Guest>
+                <Register />
+              </Guest>
+            }
+          />
+
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </BrowserRouter>
-    </>
-  )
+  );
 }

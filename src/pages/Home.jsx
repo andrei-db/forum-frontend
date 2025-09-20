@@ -2,20 +2,32 @@ import { useEffect, useState } from "react";
 import { api } from "../api/client";
 
 export default function Home() {
-  const [me, setMe] = useState(null);
-  const [error, setError] = useState("");
+    const [me, setMe] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api("/me")
-      .then(setMe)
-      .catch((err) => setError(err.message));
-  }, []);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
 
-  return (
-    <div>
-      <h2>Acasă</h2>
-      {error && <p>{error}</p>}
-      {me ? <p>Bun venit, {me.username}!</p> : <p>Se încarcă...</p>}
-    </div>
-  );
+        if (token) {
+            api("/me")
+                .then(setMe)
+                .catch(() => setMe(null))
+                .finally(() => setLoading(false));
+        } else {
+            setLoading(false);
+        }
+    }, []);
+
+    if (loading) return <p className="text-center">Loading...</p>;
+
+    return (
+        <div>
+            <h2 className="text-2xl font-bold mb-4">Acasă</h2>
+            {me ? (
+                <p className="text-lg">👋 Bun venit, <b>{me.username}</b>!</p>
+            ) : (
+                <p className="text-gray-600">Ești vizitator. <br /> Loghează-te pentru mai multe opțiuni.</p>
+            )}
+        </div>
+    );
 }
