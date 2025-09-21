@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client";
-
+import { useAuth } from "../context/AuthContext";
+import { EditIcon, Trash2Icon } from "lucide-react";
 export default function TopicPage() {
   const { id } = useParams();
   const [topic, setTopic] = useState(null);
@@ -9,6 +10,40 @@ export default function TopicPage() {
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState("");
   const [posting, setPosting] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [editContent, setEditContent] = useState("");
+  const { user } = useAuth();
+  async function handleEdit(e, postId) {
+    e.preventDefault();
+    try {
+      const updated = await api(`/posts/${postId}`, {
+        method: "PUT",
+        body: JSON.stringify({ content: editContent }),
+      });
+
+      setTopic({
+        ...topic,
+        posts: topic.posts.map(p => p._id === postId ? updated : p),
+      });
+      setEditingPost(null);
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  async function handleDelete(postId) {
+    if (!confirm("Sigur vrei să ștergi postul?")) return;
+
+    try {
+      await api(`/posts/${postId}`, { method: "DELETE" });
+      setTopic({
+        ...topic,
+        posts: topic.posts.filter(p => p._id !== postId),
+      });
+    } catch (err) {
+      alert(err.message);
+    }
+  }
 
   useEffect(() => {
     api(`/topics/${id}`)
@@ -61,12 +96,60 @@ export default function TopicPage() {
 
               <b className="text-red-700">{post.author.username}</b>
             </div>
-            <div className="flex-1">
-              <p className="text-sm  text-gray-500 mt-2">
-                {new Date(post.createdAt).toLocaleString()}
-              </p>
-              <p className="text-gray-800">{post.content}</p>
-              
+            <div className="flex justify-between flex-col flex-1">
+              <div>
+                <p className="text-sm  text-gray-500 mt-2">
+                  {new Date(post.createdAt).toLocaleString()}
+                </p>
+                {editingPost === post._id ? (
+                  <form onSubmit={(e) => handleEdit(e, post._id)} className="space-y-2">
+                    <textarea
+                      className="w-full p-2 bg-gray-100 rounded"
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        className="px-3 py-1 bg-green-600 text-white rounded"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingPost(null)}
+                        className="px-3 py-1 bg-gray-400 text-white rounded"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <p className="text-gray-800">{post.content}</p>
+                )}
+              </div>
+              {user && (user.id === post.author._id || user.role === "admin") && (
+                <div className="flex justify-end gap-2 mt-2 text-sm">
+                  <button
+                    className="flex justify-center items-center gap-1 rounded-lg bg-blue-600 text-white p-1"
+                    onClick={() => {
+                      setEditingPost(post._id);
+                      setEditContent(post.content);
+                    }}
+                  >
+                    <EditIcon size={16} />
+                    Edit
+                  </button>
+                  <button
+                    className="flex justify-center items-center gap-1 rounded-lg bg-red-600 text-white p-1"
+                    onClick={() => handleDelete(post._id)}
+                  >
+                    <Trash2Icon size={16} />
+                    Delete
+                  </button>
+                </div>
+              )}
+
             </div>
 
           </div>
@@ -81,7 +164,7 @@ export default function TopicPage() {
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
           className="w-full p-2 rounded"
-          placeholder="Scrie un răspuns..."
+          placeholder="Write a response..."
           rows="3"
         />
         <button
@@ -89,7 +172,7 @@ export default function TopicPage() {
           disabled={posting}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {posting ? "Se postează..." : "Adaugă răspuns"}
+          {posting ? "Proccessing..." : "Add new post"}
         </button>
       </form>
     </div>
