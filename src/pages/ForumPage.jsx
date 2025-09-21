@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { MessageCircle } from "lucide-react";
+import { roleColors } from "../utils/roleColors";
 
 export default function ForumPage() {
     const { id } = useParams();
@@ -34,12 +35,12 @@ export default function ForumPage() {
     if (error) return <p className="text-red-500">{error}</p>;
 
     return (
-        <div className="space-y-6 text-gray-700">
+        <div className="space-y-6 text-neutral-300">
             {console.log(forum)}
             {forum && (
-                <div className="p-4 bg-white rounded shadow">
+                <div className="p-4 bg-neutral-900 rounded shadow">
                     <h2 className="text-2xl font-bold">{forum.name}</h2>
-                    <p className="text-gray-600">{forum.description}</p>
+                    <p className="text-neutral-300">{forum.description}</p>
                 </div>
             )}
             <div className="flex justify-end items-center">
@@ -47,18 +48,18 @@ export default function ForumPage() {
                 to={`/forums/${id}/new-topic`}
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
-                Creează topic nou
+                New topic
             </Link>
             </div>
             <div>
                 {topics.length === 0 ? (
-                    <p className="text-gray-500">Nu există topicuri încă.</p>
+                    <p className="text-neutral-300">Nu există topicuri încă.</p>
                 ) : (
                     <div className="space-y-2">
                         {topics.map(topic => (
                             <div
                                 key={topic._id}
-                                className="p-4 flex gap-4 items-center rounded bg-white hover:bg-gray-50"
+                                className="p-4 flex gap-4 items-center rounded bg-neutral-900 hover:bg-neutral-800"
                             >
 
                                 <div>
@@ -71,8 +72,8 @@ export default function ForumPage() {
                                     >
                                         {topic.title}
                                     </Link>
-                                    <p className="text-sm text-gray-500">
-                                        creat de <b>{topic.author.username}</b> la{" "}
+                                    <p className="text-sm text-neutral-500">
+                                        created by <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> at{" "}
                                         {new Date(topic.createdAt).toLocaleString()}
                                     </p>
                                 </div>

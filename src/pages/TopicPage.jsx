@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { EditIcon, Trash2Icon } from "lucide-react";
+import { roleColors } from "../utils/roleColors";
+
 export default function TopicPage() {
   const { id } = useParams();
   const [topic, setTopic] = useState(null);
@@ -13,6 +15,7 @@ export default function TopicPage() {
   const [editingPost, setEditingPost] = useState(null);
   const [editContent, setEditContent] = useState("");
   const { user } = useAuth();
+
   async function handleEdit(e, postId) {
     e.preventDefault();
     try {
@@ -78,11 +81,11 @@ export default function TopicPage() {
 
 
   return (
-    <div className="space-y-6 text-gray-700">
-      <div className="p-4 bg-white rounded shadow">
+    <div className="space-y-6 text-neutral-300">
+      <div className="p-4 bg-neutral-900 rounded shadow">
         <h2 className="text-2xl font-bold">{topic.title}</h2>
-        <p className="text-sm text-gray-500">
-          <b>{topic.author.username}</b> {" "}
+        <p className="text-sm">
+          <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> {" "}
           {new Date(topic.createdAt).toLocaleString()}
         </p>
       </div>
@@ -90,21 +93,21 @@ export default function TopicPage() {
         {topic.posts.map(post => (
           <div
             key={post._id}
-            className="p-4 gap-10 flex bg-white rounded shadow-sm"
+            className="p-4 gap-10 flex bg-neutral-900 rounded shadow-sm"
           >
-            <div className="flex flex-col pb-4 bg-gray-100 justify-end items-center h-72 w-64">
-
-              <b className="text-red-700">{post.author.username}</b>
+            <div className="rounded-lg flex flex-col pb-4 bg-neutral-700 justify-end items-center h-72 w-64">
+              {console.log(post.author)}
+              <b className={roleColors[post.author.role]}>{post.author.username}</b>
             </div>
             <div className="flex justify-between flex-col flex-1">
               <div>
-                <p className="text-sm  text-gray-500 mt-2">
+                <p className="text-sm  text-neutral-300 mt-2">
                   {new Date(post.createdAt).toLocaleString()}
                 </p>
                 {editingPost === post._id ? (
                   <form onSubmit={(e) => handleEdit(e, post._id)} className="space-y-2">
                     <textarea
-                      className="w-full p-2 bg-gray-100 rounded"
+                      className="w-full p-2 bg-neutral-700 rounded"
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
                     />
@@ -125,13 +128,13 @@ export default function TopicPage() {
                     </div>
                   </form>
                 ) : (
-                  <p className="text-gray-800">{post.content}</p>
+                  <p className="text-neutral-400">{post.content}</p>
                 )}
               </div>
               {user && (user.id === post.author._id || user.role === "admin") && (
                 <div className="flex justify-end gap-2 mt-2 text-sm">
                   <button
-                    className="flex justify-center items-center gap-1 rounded-lg bg-blue-600 text-white p-1"
+                    className="flex justify-center items-center gap-1 rounded-xs bg-blue-600 text-white p-1"
                     onClick={() => {
                       setEditingPost(post._id);
                       setEditContent(post.content);
@@ -141,7 +144,7 @@ export default function TopicPage() {
                     Edit
                   </button>
                   <button
-                    className="flex justify-center items-center gap-1 rounded-lg bg-red-600 text-white p-1"
+                    className="flex justify-center items-center gap-1 rounded-xs bg-red-600 text-white p-1"
                     onClick={() => handleDelete(post._id)}
                   >
                     <Trash2Icon size={16} />
@@ -158,13 +161,13 @@ export default function TopicPage() {
 
       <form
         onSubmit={handleAddPost}
-        className="p-4 mb-4 bg-white rounded shadow space-y-2"
+        className="p-4 mb-4 bg-neutral-900 rounded shadow space-y-2"
       >
         <textarea
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
           className="w-full p-2 rounded"
-          placeholder="Write a response..."
+          placeholder="Write a message..."
           rows="3"
         />
         <button
@@ -172,7 +175,7 @@ export default function TopicPage() {
           disabled={posting}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {posting ? "Proccessing..." : "Add new post"}
+          {posting ? "Proccessing..." : "Send message"}
         </button>
       </form>
     </div>

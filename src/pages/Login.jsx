@@ -25,8 +25,8 @@ export default function Login() {
     };
 
     return (
-        <div className="flex items-center justify-center text-gray-700">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
+        <div className="flex items-center justify-center text-neutral-200 my-20">
+            <div className="w-full max-w-md bg-neutral-900 rounded-2xl shadow-md p-8">
                 <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
                 {error && (
@@ -37,7 +37,7 @@ export default function Login() {
 
                 <form onSubmit={submit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-neutral-300 mb-1">
                             Username or Email
                         </label>
                         <input
@@ -46,21 +46,21 @@ export default function Login() {
                             onChange={(e) =>
                                 setForm({ ...form, identifier: e.target.value })
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+                            className="w-full bg-neutral-800 px-3 py-2 rounded-lg focus:border-blue-500 placeholder:text-neutral-500"
                             placeholder="yourname or you@example.com"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-neutral-300 mb-1">
                             Password
                         </label>
                         <input
                             type="password"
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+                            className="w-full bg-neutral-800 px-3 py-2 rounded-lg focus:border-blue-500 placeholder:text-neutral-500"
                             placeholder="••••••••"
                             required
                         />

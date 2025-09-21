@@ -29,21 +29,21 @@ export default function NewTopicPage() {
   }
 
   return (
-    <div className="text-gray-700 bg-white p-6 rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Creează un topic nou</h2>
+    <div className="text-neutral-300 bg-neutral-900 p-6 rounded shadow">
+      <h2 className="text-xl font-bold mb-4">New topic</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          placeholder="Titlu topic"
-          className="w-full p-2 bg-gray-100 rounded"
+          placeholder="Title"
+          className="w-full p-2 bg-neutral-800 rounded"
         />
         <textarea
           value={content}
           onChange={e => setContent(e.target.value)}
-          placeholder="Scrie primul mesaj..."
-          className="w-full p-2 bg-gray-100 rounded"
+          placeholder="Message..."
+          className="w-full p-2 bg-neutral-800 rounded"
           rows="5"
         />
         <button
@@ -51,7 +51,7 @@ export default function NewTopicPage() {
           disabled={submitting}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {submitting ? "Se trimite..." : "Publică topicul"}
+          {submitting ? "Sending..." : "Publish topic"}
         </button>
       </form>
     </div>

@@ -10,6 +10,7 @@ import { AuthProvider } from "./context/AuthContext";
 import TopicPage from "./pages/TopicPage";
 import ForumPage from "./pages/ForumPage";
 import NewTopicPage from "./pages/NewTopicPage";
+import Footer from "./components/Footer";
 export default function App() {
   return (
     <AuthProvider>
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
+        <Footer />
       </BrowserRouter>
     </AuthProvider>
   );

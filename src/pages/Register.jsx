@@ -22,9 +22,9 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center text-gray-700">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+    <div className="flex items-center justify-center text-gray-200">
+      <div className="w-full max-w-md bg-neutral-900 rounded-2xl shadow-md p-8 my-20">
+        <h2 className="text-2xl font-bold mb-6 text-center text-neutral-300">Register</h2>
 
         {error && (
           <div className="mb-4 text-sm text-red-600 bg-red-100 p-2 rounded">
@@ -34,28 +34,28 @@ export default function Register() {
 
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-300 mb-1">
               Username
             </label>
             <input
               type="text"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+              className="w-full placeholder:text-neutral-500 bg-neutral-800 px-3 py-2 rounded-lg focus:border-blue-500"
               placeholder="john_doe"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-300 mb-1">
               Email
             </label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+              className="w-full placeholder:text-neutral-500 bg-neutral-800 px-3 py-2 rounded-lg focus:border-blue-500"
               placeholder="you@example.com"
               required
             />
@@ -69,7 +69,7 @@ export default function Register() {
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+              className="w-full px-3 py-2 placeholder:text-neutral-500 bg-neutral-800 rounded-lg focus:border-blue-500"
               placeholder="••••••••"
               required
             />

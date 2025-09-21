@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { roleColors } from "../utils/roleColors";
 export default function Navbar() {
   const nav = useNavigate();
   const { user, logout } = useAuth();
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-white shadow text-gray-700">
+    <nav className="flex justify-between items-center p-4 bg-neutral-900 shadow text-neutral-300">
       <Link to="/" className="text-lg font-bold">
         Forum MVP
       </Link>
@@ -13,7 +14,7 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         {user ? (
           <>
-            <span className="text-gray-700">👋 Hi, {user.username}!</span>
+            <div >👋 Hi, <span className={`${roleColors[user.role]} font-bold`}>{user.username}</span>!</div>
             <button
               onClick={() => {
                 logout();
