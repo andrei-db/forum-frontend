@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
-import { useAuth } from "../context/AuthContext";
 import { MessageCircle } from "lucide-react";
 
 export default function ForumPage() {
     const { id } = useParams();
-    const { user } = useAuth();
     const [topics, setTopics] = useState([]);
     const [forum, setForum] = useState(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
-    const [newTopic, setNewTopic] = useState({ title: "", content: "" });
-    const [creating, setCreating] = useState(false);
 
     useEffect(() => {
         async function loadData() {
@@ -34,30 +30,6 @@ export default function ForumPage() {
         loadData();
     }, [id]);
 
-
-    async function handleCreateTopic(e) {
-        e.preventDefault();
-        if (!newTopic.title.trim() || !newTopic.content.trim()) return;
-
-        setCreating(true);
-        try {
-            const topic = await api("/topics", {
-                method: "POST",
-                body: JSON.stringify({
-                    forum: id,
-                    title: newTopic.title,
-                    content: newTopic.content,
-                }),
-            });
-            setTopics([topic, ...topics]);
-            setNewTopic({ title: "", content: "" });
-        } catch (err) {
-            alert(err.message);
-        } finally {
-            setCreating(false);
-        }
-    }
-
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
 
@@ -70,7 +42,14 @@ export default function ForumPage() {
                     <p className="text-gray-600">{forum.description}</p>
                 </div>
             )}
-
+            <div className="flex justify-end items-center">
+            <Link
+                to={`/forums/${id}/new-topic`}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+                Creează topic nou
+            </Link>
+            </div>
             <div>
                 {topics.length === 0 ? (
                     <p className="text-gray-500">Nu există topicuri încă.</p>
@@ -104,35 +83,7 @@ export default function ForumPage() {
                 )}
             </div>
 
-            {user && (
-                <form
-                    onSubmit={handleCreateTopic}
-                    className="p-4 bg-white border rounded shadow space-y-2"
-                >
-                    <h3 className="text-lg font-semibold">➕ Creează un topic nou</h3>
-                    <input
-                        type="text"
-                        value={newTopic.title}
-                        onChange={e => setNewTopic({ ...newTopic, title: e.target.value })}
-                        className="w-full p-2 border rounded"
-                        placeholder="Titlu topic"
-                    />
-                    <textarea
-                        value={newTopic.content}
-                        onChange={e => setNewTopic({ ...newTopic, content: e.target.value })}
-                        className="w-full p-2 border rounded"
-                        placeholder="Primul mesaj..."
-                        rows="3"
-                    />
-                    <button
-                        type="submit"
-                        disabled={creating}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-                    >
-                        {creating ? "Se creează..." : "Creează topic"}
-                    </button>
-                </form>
-            )}
+          
         </div>
     );
 }

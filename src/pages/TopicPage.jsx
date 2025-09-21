@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 
 export default function TopicPage() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [topic, setTopic] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -51,25 +51,31 @@ export default function TopicPage() {
           {new Date(topic.createdAt).toLocaleString()}
         </p>
       </div>
-    {console.log(topic)}
       <div className="space-y-4">
-        { topic.posts.map(post => (
+        {topic.posts.map(post => (
           <div
             key={post._id}
-            className="p-4 bg-white border rounded shadow-sm"
+            className="p-4 gap-10 flex bg-white rounded shadow-sm"
           >
-            <p className="text-gray-800">{post.content}</p>
-            <p className="text-sm text-gray-500 mt-2">
-              Scris de <b>{post.author.username}</b> la{" "}
-              {new Date(post.createdAt).toLocaleString()}
-            </p>
+            <div className="flex flex-col pb-4 bg-gray-100 justify-end items-center h-72 w-64">
+
+              <b className="text-red-700">{post.author.username}</b>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm  text-gray-500 mt-2">
+                {new Date(post.createdAt).toLocaleString()}
+              </p>
+              <p className="text-gray-800">{post.content}</p>
+              
+            </div>
+
           </div>
-        )) }
+        ))}
       </div>
 
       <form
         onSubmit={handleAddPost}
-        className="p-4 bg-white rounded shadow space-y-2"
+        className="p-4 mb-4 bg-white rounded shadow space-y-2"
       >
         <textarea
           value={newPost}
