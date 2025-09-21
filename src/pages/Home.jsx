@@ -1,20 +1,55 @@
-import { useAuth } from "../context/AuthContext";
-
+import { useEffect, useState } from "react";
+import { api } from "../api/client";
+import { Link } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
 export default function Home() {
-  const { user, loading } = useAuth();
+    const [categories, setCategories] = useState([]);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
 
-  if (loading) return <p className="text-center">Loading...</p>;
+    useEffect(() => {
+        api("/categories")
+            .then(setCategories)
+            .catch(err => setError(err.message))
+            .finally(() => setLoading(false));
+    }, []);
 
-  return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Acasă</h2>
-      {user ? (
-        <p className="text-lg">👋 Bun venit, <b>{user.username}</b>!</p>
-      ) : (
-        <p className="text-gray-600">
-          Ești vizitator. <br /> Loghează-te pentru mai multe opțiuni.
-        </p>
-      )}
-    </div>
-  );
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p className="text-red-500">{error}</p>;
+
+    return (
+        <div className="text-gray-700">
+            {categories.map(cat => (
+                <div key={cat._id} className="rounded-md shadow p-4 bg-white mb-5">
+
+
+                    <h3 className="text-xl font-semibold mb-2">{cat.name}</h3>
+                    <p className="text-gray-600 mb-4">{cat.description}</p>
+
+                    <div className="divide-y divide-gray-200">
+                        {cat.forums.map((forum) => (
+                            <div className="flex gap-4 items-center">
+                                <div><MessageCircle /></div>
+                                <div
+                                    key={forum._id}
+                                    className="py-2"
+                                >
+                                    <Link
+                                        to={`/forums/${forum._id}`}
+                                        className="font-medium"
+                                    >
+                                        {forum.name}
+                                    </Link>
+                                    <span className="text-gray-500 text-sm flex items-center gap-1">
+                                        {forum.description}
+                                    </span>
+                                </div>
+                            </div>
+
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
 }
