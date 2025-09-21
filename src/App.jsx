@@ -7,6 +7,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Header from "./components/Header";
 import { AuthProvider } from "./context/AuthContext";
+import TopicPage from "./pages/TopicPage";
+import ForumPage from "./pages/ForumPage";
 export default function App() {
   return (
     <AuthProvider>
@@ -33,7 +35,8 @@ export default function App() {
                 </Guest>
               }
             />
-
+            <Route path="/forums/:id" element={<ForumPage />} />
+            <Route path="/topics/:id" element={<TopicPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
