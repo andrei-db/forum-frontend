@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import { Link } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { formatNumber } from "../utils/formatNumber";
 import { roleColors } from "../utils/roleColors";
 
 export default function Home() {
     const [categories, setCategories] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
-    const { user } = useAuth();
     useEffect(() => {
         api("/categories")
             .then(setCategories)
@@ -32,6 +31,14 @@ export default function Home() {
             .catch(err => setError(err.message));
     }, []);
 
+    const [messagesCount, setMessagesCount] = useState([]);
+
+    useEffect(() => {
+        api("/forums/messages-count")
+            .then(setMessagesCount)
+            .catch(err => setError(err.message));
+    }, []);
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
 
@@ -45,7 +52,7 @@ export default function Home() {
                         <div className="divide-y-1 divide-neutral-800">
                             {cat.forums.map((forum) => {
                                 const forumData = latestPosts.find(lp => lp.forum._id === forum._id);
-
+                                const countData = messagesCount.find(mc => mc._id === forum._id);
                                 return (
                                     <div className="flex py-2 justify-between items-center">
                                         <div className="flex gap-4 items-center">
@@ -68,7 +75,7 @@ export default function Home() {
                                         <div className="flex justify-start items-start w-110">
                                             <div className="flex flex-col justify-center items-center me-10">
                                                 <span>Messages</span>
-                                                <span>100.7K</span>
+                                                <span>{countData ? formatNumber(countData.messagesCount) : 0}</span>
                                             </div>
                                             {forumData?.lastPost ? (
                                                 <div className="flex justify-start">
@@ -88,7 +95,7 @@ export default function Home() {
                                             ) : (
                                                 <div className="text-sm text-neutral-500">No posts yet</div>
                                             )}
-                                           
+
                                         </div>
 
                                     </div>

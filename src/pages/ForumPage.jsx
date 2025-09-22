@@ -14,7 +14,7 @@ export default function ForumPage() {
     useEffect(() => {
         async function loadData() {
             try {
-                const topicsData = await api(`/forums/${id}/topics`);
+                const topicsData = await api(`/forums/${id}/topics-with-last-reply`);
                 const forumData = await api(`/forums/${id}`);
 
                 console.log("DEBUG forum:", forumData);
@@ -44,12 +44,12 @@ export default function ForumPage() {
                 </div>
             )}
             <div className="flex justify-end items-center">
-            <Link
-                to={`/forums/${id}/new-topic`}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-                New topic
-            </Link>
+                <Link
+                    to={`/forums/${id}/new-topic`}
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                    New topic
+                </Link>
             </div>
             <div>
                 {topics.length === 0 ? (
@@ -59,24 +59,45 @@ export default function ForumPage() {
                         {topics.map(topic => (
                             <div
                                 key={topic._id}
-                                className="p-4 flex gap-4 items-center rounded bg-neutral-900 hover:bg-neutral-800"
+                                className="p-4 flex justify-between gap-4 items-center rounded bg-neutral-900 hover:bg-neutral-800"
                             >
+                                <div className="flex items-center">
+                                    <div className="me-3">
+                                        <MessageCircle />
+                                    </div>
+                                    <div>
+                                        <Link
+                                            to={`/topics/${topic._id}`}
+                                            className="font-medium"
+                                        >
+                                            {topic.title}
+                                        </Link>
+                                        <p className="text-sm text-neutral-500">
+                                            created by <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> at{" "}
+                                            {new Date(topic.createdAt).toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex">
+                                    <div className="text-end">
+                                        {topic.lastReply ? (
+                                            <>
+                                                <p className="text-xs text-neutral-500">
+                                                    {new Date(topic.lastReply.createdAt).toLocaleString()}
+                                                </p>
+                                                {console.log(topic.lastReply.author)}
+                                                <p className={`${roleColors[topic.lastReply.author.role]} text-sm font-medium`}>
+                                                    {topic.lastReply.author.username}
+                                                </p>
 
-                                <div>
-                                    <MessageCircle />
+                                            </>
+                                        ) : (
+                                            <p className="text-xs text-neutral-500">No replies yet</p>
+                                        )}
+                                    </div>
+                                    <div className="ms-3 w-10 h-10 bg-neutral-700 me-3"></div>
                                 </div>
-                                <div>
-                                    <Link
-                                        to={`/topics/${topic._id}`}
-                                        className="font-medium"
-                                    >
-                                        {topic.title}
-                                    </Link>
-                                    <p className="text-sm text-neutral-500">
-                                        created by <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> at{" "}
-                                        {new Date(topic.createdAt).toLocaleString()}
-                                    </p>
-                                </div>
+
 
                             </div>
                         ))}
@@ -84,7 +105,7 @@ export default function ForumPage() {
                 )}
             </div>
 
-          
+
         </div>
     );
 }
