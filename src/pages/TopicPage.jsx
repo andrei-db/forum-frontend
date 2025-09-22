@@ -95,9 +95,11 @@ export default function TopicPage() {
             key={post._id}
             className="p-4 gap-10 flex bg-neutral-900 rounded shadow-sm"
           >
-            <div className="rounded-lg flex flex-col pb-4 bg-neutral-700 justify-end items-center h-72 w-64">
-              {console.log(post.author)}
-              <b className={roleColors[post.author.role]}>{post.author.username}</b>
+            <div className="rounded-lg flex flex-col bg-neutral-700 justify-end items-center h-72 w-64 overflow-hidden">
+
+              <img className="w-full h-full object-cover" src={`/${post.author.profilePicture}`}></img>
+
+              <span className={`${roleColors[post.author.role]} py-2 bg-neutral-950 w-full text-center`}>{post.author.username}</span>
             </div>
             <div className="flex justify-between flex-col flex-1">
               <div>

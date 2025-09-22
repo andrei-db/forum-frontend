@@ -77,9 +77,13 @@ export default function Home() {
                                                 <span>Messages</span>
                                                 <span>{countData ? formatNumber(countData.messagesCount) : 0}</span>
                                             </div>
+
                                             {forumData?.lastPost ? (
+
                                                 <div className="flex justify-start">
-                                                    <div className="w-10 h-10 bg-neutral-700 me-3"></div>
+                                                    <div className="h-10 w-10 bg-neutral-700 me-3">
+                                                        <img className="w-full h-full object-cover" src={`/${forumData.lastPost.author.profilePicture}`}></img>
+                                                    </div>
                                                     <div>
                                                         <Link to={`/topics/${forumData.lastPost.topic._id}`}>
                                                             {forumData.lastPost.topic.title}
@@ -110,8 +114,9 @@ export default function Home() {
                 <div>
                     {topics.map(t => (
                         <div key={t._id} className="flex py-2 items-center gap-5">
-                            <div className="w-10 h-10 bg-neutral-700"></div>
-                            <div>
+                            <div className="h-10 w-10 bg-neutral-700 me-3">
+                                <img className="w-full h-full object-cover" src={`/${t.author.profilePicture}`}></img>
+                            </div>                            <div>
                                 <Link to={`/topics/${t._id}`}>
                                     {t.title}
                                 </Link>

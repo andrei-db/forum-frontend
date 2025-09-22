@@ -1,8 +1,9 @@
 import Navbar from "./Navbar"
 export default function Header(){
     return(
-        <header className="relative bg-neutral-800 h-[250px] flex flex-col items-center justify-center">
-            <h1 className="self-center text-neutral-300 text-4xl font-bold">Welcome!</h1>
+        <header className="relative bg-[url('/csgo.jpg')]
+         bg-center h-[250px] flex flex-col items-center justify-center">
+            <h1 className="relative top-10 italic text-neutral-400 text-5xl font-bold">"Anyone may enter, but only few can leave."</h1>
         </header>
     )
 }

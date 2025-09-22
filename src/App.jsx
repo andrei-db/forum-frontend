@@ -28,15 +28,15 @@ export default function App() {
               path="/login"
               element={
                 <Guest>
-                  <Login />
+                <Login />
                 </Guest>
               }
             />
             <Route
               path="/register"
               element={
-                <Guest>
-                  <Register />
+                 <Guest>
+                <Register />
                 </Guest>
               }
             />

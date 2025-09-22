@@ -101,7 +101,9 @@ export default function ForumPage() {
                                                 <p className="text-xs text-neutral-500">No replies yet</p>
                                             )}
                                         </div>
-                                        <div className="ms-3 w-10 h-10 bg-neutral-700 me-3"></div>
+                                        <div className="ms-3 h-10 w-10 bg-neutral-700 me-3">
+                                            <img className="w-full h-full object-cover" src={`/${topic?.lastReply.author.profilePicture}`}></img>
+                                        </div>
                                     </div>
                                 </div>
 

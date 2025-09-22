@@ -7,6 +7,8 @@ export function Protected({ children }) {
 }
 
 export function Guest({ children }) {
+  
   const { authed } = useAuth();
+  console.log(authed);
   return authed ? <Navigate to="/" /> : children;
 }
