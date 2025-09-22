@@ -1,9 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { roleColors } from "../utils/roleColors";
+import { useState, useEffect, useRef } from "react";
 export default function Navbar() {
   const nav = useNavigate();
   const { user, logout } = useAuth();
+
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef();
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="flex justify-between items-center p-4 bg-neutral-900 shadow text-neutral-300">
@@ -13,18 +27,59 @@ export default function Navbar() {
 
       <div className="flex items-center gap-4">
         {user ? (
-          <>
-            <div >👋 Hi, <span className={`${roleColors[user.role]} font-bold`}>{user.username}</span>!</div>
+          <div className="relative cursor-pointer hover:bg-neutral-700 rounded-sm" ref={menuRef}>
             <button
-              onClick={() => {
-                logout();
-                nav("/login");
-              }}
-              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+              onClick={() => setOpen(!open)}
+              className="flex p-2 items-center gap-1 hover:text-white"
             >
-              Logout
+              👋 Hi,{" "}
+              <span className={`${roleColors[user.role]} font-bold`}>
+                {user.username}
+              </span>
+              <svg
+                className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""
+                  }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
-          </>
+
+            {open && (
+              <div className="absolute right-0 mt-2 w-50 bg-neutral-900 rounded-md shadow-lg z-50">
+                <Link
+                  to="/account/account-details"
+                  className="block px-4 py-2 text-sm hover:bg-neutral-700"
+                  onClick={() => setOpen(false)}
+                >
+                  Account details
+                </Link>
+                <Link
+                  to="/account/security"
+                  className="block px-4 py-2 text-sm hover:bg-neutral-700"
+                  onClick={() => setOpen(false)}
+                >
+                  Password and security
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    nav("/login");
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-red-600 hover:text-white"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             <Link to="/login">
