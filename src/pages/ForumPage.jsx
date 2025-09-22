@@ -78,24 +78,31 @@ export default function ForumPage() {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex">
-                                    <div className="text-end">
-                                        {topic.lastReply ? (
-                                            <>
-                                                <p className="text-xs text-neutral-500">
-                                                    {new Date(topic.lastReply.createdAt).toLocaleString()}
-                                                </p>
-                                                {console.log(topic.lastReply.author)}
-                                                <p className={`${roleColors[topic.lastReply.author.role]} text-sm font-medium`}>
-                                                    {topic.lastReply.author.username}
-                                                </p>
-
-                                            </>
-                                        ) : (
-                                            <p className="text-xs text-neutral-500">No replies yet</p>
-                                        )}
+                                <div className="flex gap-10 items-center">
+                                    <div>
+                                        <p className="text-sm text-neutral-500">
+                                            Replies: {topic.replies}
+                                        </p>
                                     </div>
-                                    <div className="ms-3 w-10 h-10 bg-neutral-700 me-3"></div>
+                                    <div className="flex">
+                                        <div className="text-end w-40">
+                                            {topic.lastReply ? (
+                                                <>
+                                                    <p className="text-xs text-neutral-500">
+                                                        {new Date(topic.lastReply.createdAt).toLocaleString()}
+                                                    </p>
+                                                    {console.log(topic.lastReply.author)}
+                                                    <p className={`${roleColors[topic.lastReply.author.role]} text-sm font-medium`}>
+                                                        {topic.lastReply.author.username}
+                                                    </p>
+
+                                                </>
+                                            ) : (
+                                                <p className="text-xs text-neutral-500">No replies yet</p>
+                                            )}
+                                        </div>
+                                        <div className="ms-3 w-10 h-10 bg-neutral-700 me-3"></div>
+                                    </div>
                                 </div>
 
 
