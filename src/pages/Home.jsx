@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { formatNumber } from "../utils/formatNumber";
 import { roleColors } from "../utils/roleColors";
-
+import { useAuth } from "../context/AuthContext";
 export default function Home() {
     const [categories, setCategories] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
+    const {user} = useAuth();
     useEffect(() => {
         api("/categories")
             .then(setCategories)
@@ -72,7 +73,7 @@ export default function Home() {
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="flex justify-start items-start w-110">
+                                        <div className="flex justify-start items-center w-110">
                                             <div className="flex flex-col justify-center items-center me-10">
                                                 <span>Messages</span>
                                                 <span>{countData ? formatNumber(countData.messagesCount) : 0}</span>
@@ -80,9 +81,11 @@ export default function Home() {
 
                                             {forumData?.lastPost ? (
 
-                                                <div className="flex justify-start">
-                                                    <div className="h-10 w-10 bg-neutral-700 me-3">
-                                                        <img className="w-full h-full object-cover" src={`/${forumData.lastPost.author.profilePicture}`}></img>
+                                                <div className="flex items-center">
+                                                    <div className="h-10 w-10 me-3">
+                                                        <img className="w-full h-full object-cover rounded opacity-90"
+                                                            src={user?.profilePicture || "/default-avatar.png"}
+                                                            alt={user?.username}></img>
                                                     </div>
                                                     <div>
                                                         <Link to={`/topics/${forumData.lastPost.topic._id}`}>
@@ -114,8 +117,10 @@ export default function Home() {
                 <div>
                     {topics.map(t => (
                         <div key={t._id} className="flex py-2 items-center gap-5">
-                            <div className="h-10 w-10 bg-neutral-700 me-3">
-                                <img className="w-full h-full object-cover" src={`/${t.author.profilePicture}`}></img>
+                            <div className="h-10 w-10 me-3">
+                                <img className="w-full h-full object-cover rounded opacity-90"
+                                    src={user?.profilePicture || "/default-avatar.png"}
+                                    alt={user?.username}></img>
                             </div>                            <div>
                                 <Link to={`/topics/${t._id}`}>
                                     {t.title}

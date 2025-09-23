@@ -7,14 +7,21 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const refreshUser = async () => {
+        try {
+            const me = await api("/me");
+            setUser(me);
+        } catch {
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem("token");
-
         if (token) {
-            api("/me")
-                .then(setUser)
-                .catch(() => setUser(null))
-                .finally(() => setLoading(false));
+            refreshUser();
         } else {
             setLoading(false);
         }
@@ -31,7 +38,7 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

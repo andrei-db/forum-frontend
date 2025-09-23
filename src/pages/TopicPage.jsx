@@ -97,7 +97,7 @@ export default function TopicPage() {
           >
             <div className="rounded-lg flex flex-col bg-neutral-700 justify-end items-center h-72 w-64 overflow-hidden">
 
-              <img className="w-full h-full object-cover" src={`/${post.author.profilePicture}`}></img>
+              <img className="w-full h-full object-cover opacity-90" src={post.author.profilePicture || "/default-avatar.png"}></img>
 
               <span className={`${roleColors[post.author.role]} py-2 bg-neutral-950 w-full text-center`}>{post.author.username}</span>
             </div>

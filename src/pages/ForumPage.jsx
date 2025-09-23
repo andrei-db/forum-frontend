@@ -36,7 +36,6 @@ export default function ForumPage() {
 
     return (
         <div className="space-y-6 text-neutral-300">
-            {console.log(forum)}
             {forum && (
                 <div className="p-4 bg-neutral-900 rounded shadow">
                     <h2 className="text-2xl font-bold">{forum.name}</h2>
@@ -88,10 +87,9 @@ export default function ForumPage() {
                                         <div className="text-end w-40">
                                             {topic.lastReply ? (
                                                 <>
-                                                    <p className="text-xs text-neutral-500">
+                                                    <p className="text-xs">
                                                         {new Date(topic.lastReply.createdAt).toLocaleString()}
                                                     </p>
-                                                    {console.log(topic.lastReply.author)}
                                                     <p className={`${roleColors[topic.lastReply.author.role]} text-sm font-medium`}>
                                                         {topic.lastReply.author.username}
                                                     </p>
@@ -101,8 +99,8 @@ export default function ForumPage() {
                                                 <p className="text-xs text-neutral-500">No replies yet</p>
                                             )}
                                         </div>
-                                        <div className="ms-3 h-10 w-10 bg-neutral-700 me-3">
-                                            <img className="w-full h-full object-cover" src={`/${topic?.lastReply.author.profilePicture}`}></img>
+                                        <div className="ms-3 h-10 w-10 me-3">
+                                            <img className="w-full h-full object-cover rounded opacity-90" src={topic?.lastReply.author.profilePicture || "/default-avatar.png"}></img>
                                         </div>
                                     </div>
                                 </div>
