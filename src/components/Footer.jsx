@@ -36,7 +36,7 @@ export default function Footer() {
   if (countTopics === null) return <p>Loading...</p>;
 
   return (
-    <footer className="my-10 flex flex-col gap-5">
+    <footer className="my-5 flex flex-col gap-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-5">
         <div className="flex flex-col justify-center items-center bg-neutral-800 rounded p-2">
           <span className="font-semibold text-xl">{countTopics}</span>

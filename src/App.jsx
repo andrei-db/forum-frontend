@@ -14,6 +14,7 @@ import Footer from "./components/Footer";
 import AccountDetails from "./pages/AccountDetails";
 import AccountLayout from "./layouts/AccountLayout";
 import Security from "./pages/Security";
+import Profile from "./pages/Profile";
 export default function App() {
   return (
     <AuthProvider>
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/forums/:id/new-topic" element={<NewTopicPage />} />
             <Route path="/forums/:id" element={<ForumPage />} />
             <Route path="/topics/:id" element={<TopicPage />} />
+            <Route path="/members/:username" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Footer />

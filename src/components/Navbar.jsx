@@ -54,6 +54,13 @@ export default function Navbar() {
 
             {open && (
               <div className="absolute right-0 mt-2 w-50 bg-neutral-900 rounded-md shadow-lg z-50">
+                 <Link
+                  to={`/members/${user.username}`}
+                  className="block px-4 py-2 text-sm hover:bg-neutral-700"
+                  onClick={() => setOpen(false)}
+                >
+                  Profile
+                </Link>
                 <Link
                   to="/account/account-details"
                   className="block px-4 py-2 text-sm hover:bg-neutral-700"
