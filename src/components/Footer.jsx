@@ -1,6 +1,7 @@
 import { roleColors } from "../utils/roleColors";
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
+import OnlineUsers from "./OnlineUsers";
 export default function Footer() {
   const [countTopics, setCountTopics] = useState(null);
   const [countPosts, setCountPosts] = useState(null);
@@ -29,14 +30,14 @@ export default function Footer() {
       .then(setLatestUser)
       .catch(err => setError(err.message));
   }, []);
-  
+
 
   if (error) return <p className="text-red-500">{error}</p>;
   if (countTopics === null) return <p>Loading...</p>;
 
   return (
-    <footer className="mt-10 p-4 bg-neutral-900">
-      <div className="grid grid-cols-4 mb-10 gap-5">
+    <footer className="my-10 flex flex-col gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-5">
         <div className="flex flex-col justify-center items-center bg-neutral-800 rounded p-2">
           <span className="font-semibold text-xl">{countTopics}</span>
           <span className="uppercase text-sm">Topics</span>
@@ -54,6 +55,7 @@ export default function Footer() {
           <span className="uppercase text-sm">Latest member</span>
         </div>
       </div>
+      <OnlineUsers />
       <div className="flex flex-wrap justify-center gap-6 text-sm">
         <span>
           <b className={roleColors.admin}>Admin</b>

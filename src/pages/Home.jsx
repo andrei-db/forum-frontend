@@ -9,7 +9,7 @@ export default function Home() {
     const [categories, setCategories] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
-    const {user} = useAuth();
+    const { user } = useAuth();
     useEffect(() => {
         api("/categories")
             .then(setCategories)
@@ -44,8 +44,8 @@ export default function Home() {
     if (error) return <p className="text-red-500">{error}</p>;
 
     return (
-        <div className="text-neutral-300 gap-5 flex items-start">
-            <div className="flex-1">
+        <div className="mt-5 text-neutral-300 gap-5 flex flex-col lg:flex-row items-start ">
+            <div className="w-full md:flex-1">
                 {categories.map(cat => (
                     <div key={cat._id} className="rounded-md shadow p-4 bg-neutral-900 mb-5">
                         <h3 className="text-xl font-semibold mb-2">{cat.name}</h3>
@@ -55,56 +55,57 @@ export default function Home() {
                                 const forumData = latestPosts.find(lp => lp.forum._id === forum._id);
                                 const countData = messagesCount.find(mc => mc._id === forum._id);
                                 return (
-                                    <div className="flex py-2 justify-between items-center">
-                                        <div className="flex gap-4 items-center">
-                                            <div><MessageCircle /></div>
-                                            <div
-                                                key={forum._id}
-                                                className="py-2"
-                                            >
-                                                <Link
-                                                    to={`/forums/${forum._id}`}
-                                                    className="font-medium"
+                                    <div className="flex gap-3 items-center">
+                                        <div><MessageCircle /></div>
+                                        <div className="flex flex-col md:flex-row flex-1 justify-between py-2">
+                                            <div className="flex items-center">
+
+                                                <div
+                                                    key={forum._id}
+                                                    className="py-2"
                                                 >
-                                                    {forum.name}
-                                                </Link>
-                                                <span className="text-neutral-500 text-sm flex items-center gap-1">
-                                                    {forum.description}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-start items-center w-110">
-                                            <div className="flex flex-col justify-center items-center me-10">
-                                                <span>Messages</span>
-                                                <span>{countData ? formatNumber(countData.messagesCount) : 0}</span>
-                                            </div>
-
-                                            {forumData?.lastPost ? (
-
-                                                <div className="flex items-center">
-                                                    <div className="h-10 w-10 me-3">
-                                                        <img className="w-full h-full object-cover rounded opacity-90"
-                                                            src={user?.profilePicture || "/default-avatar.png"}
-                                                            alt={user?.username}></img>
-                                                    </div>
-                                                    <div>
-                                                        <Link to={`/topics/${forumData.lastPost.topic._id}`}>
-                                                            {forumData.lastPost.topic.title}
-                                                        </Link>
-                                                        <p className="text-sm text-neutral-500">
-                                                            {new Date(forumData.lastPost.createdAt).toLocaleString()} by{" "}
-                                                            <span className={`${roleColors[forumData.lastPost.author.role]} font-bold`}>
-                                                                {forumData.lastPost.author.username}
-                                                            </span>
-                                                        </p>
-                                                    </div>
+                                                    <Link
+                                                        to={`/forums/${forum._id}`}
+                                                        className="font-medium"
+                                                    >
+                                                        {forum.name}
+                                                    </Link>
+                                                    <span className="text-neutral-500 text-sm flex items-center gap-1">
+                                                        {forum.description}
+                                                    </span>
                                                 </div>
-                                            ) : (
-                                                <div className="text-sm text-neutral-500">No posts yet</div>
-                                            )}
+                                            </div>
+                                            <div className="flex flex-col md:flex-row justify-start md:items-center">
+                                                <div className="flex mb-3 md:mb-0 md:flex-col justify-start md:justify-end items-center me-5">
+                                                    <span>Posts<span className="me-2">:</span></span>
+                                                    <span>{countData ? formatNumber(countData.messagesCount) : 0}</span>
+                                                </div>
 
+                                                {forumData?.lastPost ? (
+
+                                                    <div className="flex items-center text-sm mb-2 md:mb-0">
+                                                        <div className="h-10 w-10 me-2">
+                                                            <img className="w-full h-full object-cover rounded opacity-90"
+                                                                src={forumData.lastPost.author.profilePicture || "/default-avatar.png"}
+                                                                alt={forumData.lastPost.author.username}></img>
+                                                        </div>
+                                                        <div className="overflow-hidden w-60">
+                                                            <Link to={`/topics/${forumData.lastPost.topic._id}`}>
+                                                                {forumData.lastPost.topic.title}
+                                                            </Link>
+                                                            <p className="text-sm text-neutral-500">
+                                                                {new Date(forumData.lastPost.createdAt).toLocaleString()} by{" "}
+                                                                <span className={`${roleColors[forumData.lastPost.author.role]} font-bold`}>
+                                                                    {forumData.lastPost.author.username}
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-neutral-500">No posts yet</div>
+                                                )}
+                                            </div>
                                         </div>
-
                                     </div>
                                 );
                             })}
@@ -119,8 +120,8 @@ export default function Home() {
                         <div key={t._id} className="flex py-2 items-center gap-5">
                             <div className="h-10 w-10 me-3">
                                 <img className="w-full h-full object-cover rounded opacity-90"
-                                    src={user?.profilePicture || "/default-avatar.png"}
-                                    alt={user?.username}></img>
+                                    src={t.author.profilePicture || "/default-avatar.png"}
+                                    alt={t.author.username}></img>
                             </div>                            <div>
                                 <Link to={`/topics/${t._id}`}>
                                     {t.title}

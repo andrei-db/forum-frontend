@@ -18,9 +18,10 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar />
-        <Header />
-        <div className="mt-5">
+
+        <div className="sm:mx-10">
+          <Navbar />
+          <Header />
           <Routes>
             <Route path="/" element={<Home />} />
 
@@ -28,15 +29,15 @@ export default function App() {
               path="/login"
               element={
                 <Guest>
-                <Login />
+                  <Login />
                 </Guest>
               }
             />
             <Route
               path="/register"
               element={
-                 <Guest>
-                <Register />
+                <Guest>
+                  <Register />
                 </Guest>
               }
             />
@@ -56,8 +57,9 @@ export default function App() {
             <Route path="/topics/:id" element={<TopicPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
+          <Footer />
         </div>
-        <Footer />
+        
       </BrowserRouter>
     </AuthProvider>
   );

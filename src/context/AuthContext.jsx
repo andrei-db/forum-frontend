@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../api/client";
-
+import { io } from "socket.io-client";
 const AuthContext = createContext();
-
+const socket = io(import.meta.env.VITE_API_BASE, { withCredentials: true });
 export function AuthProvider({ children }) {
+
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -26,7 +27,11 @@ export function AuthProvider({ children }) {
             setLoading(false);
         }
     }, []);
-
+    useEffect(() => {
+        if (user) {
+            socket.emit("user_online", { id: user._id });
+        }
+    }, [user]);
     const login = (token, user) => {
         localStorage.setItem("token", token);
         setUser(user);
@@ -35,6 +40,7 @@ export function AuthProvider({ children }) {
     const logout = () => {
         localStorage.removeItem("token");
         setUser(null);
+        socket.disconnect();
     };
 
     return (
