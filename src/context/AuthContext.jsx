@@ -14,6 +14,11 @@ export function AuthProvider({ children }) {
             setUser(me);
         } catch {
             setUser(null);
+            if (err.message.includes("Unauthorized") || err.message.includes("401")) {
+                logout();
+            } else {
+                setUser(null);
+            }
         } finally {
             setLoading(false);
         }
