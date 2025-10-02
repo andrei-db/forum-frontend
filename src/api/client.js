@@ -4,7 +4,7 @@ export async function api(path, options = {}) {
 
     const headers = {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...options.headers,
+        ...options.headers
     };
 
     if (!(options.body instanceof FormData)) {
@@ -14,6 +14,7 @@ export async function api(path, options = {}) {
     const res = await fetch(`${API_BASE}${path}`, {
         ...options,
         headers,
+        credentials: "include"
     });
 
     if (!res.ok) {

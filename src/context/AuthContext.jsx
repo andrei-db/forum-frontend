@@ -1,20 +1,18 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { api } from "../api/client";
-import { io } from "socket.io-client";
 const AuthContext = createContext();
-const socket = io(import.meta.env.VITE_API_BASE, { withCredentials: true });
 export function AuthProvider({ children }) {
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    
     const refreshUser = async () => {
         try {
             const me = await api("/me");
             setUser(me);
-        } catch {
+        } catch(err) {
             setUser(null);
-            if (err.message.includes("Unauthorized") || err.message.includes("401")) {
+            if (err?.message?.includes("Unauthorized") || err?.message?.includes("401")) {
                 logout();
             } else {
                 setUser(null);
@@ -32,11 +30,7 @@ export function AuthProvider({ children }) {
             setLoading(false);
         }
     }, []);
-    useEffect(() => {
-        if (user) {
-            socket.emit("user_online", { id: user._id });
-        }
-    }, [user]);
+    
     const login = (token, user) => {
         localStorage.setItem("token", token);
         setUser(user);
@@ -45,7 +39,6 @@ export function AuthProvider({ children }) {
     const logout = () => {
         localStorage.removeItem("token");
         setUser(null);
-        socket.disconnect();
     };
 
     return (

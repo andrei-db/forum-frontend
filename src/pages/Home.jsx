@@ -85,9 +85,11 @@ export default function Home() {
 
                                                     <div className="flex items-center text-sm mb-2 md:mb-0">
                                                         <div className="h-10 w-10 me-2">
-                                                            <img className="w-full h-full object-cover rounded opacity-90"
-                                                                src={forumData.lastPost.author.profilePicture || "/default-avatar.png"}
-                                                                alt={forumData.lastPost.author.username}></img>
+                                                            <Link to={`/members/${forumData.lastPost.author.username}`}>
+                                                                <img className="w-full h-full object-cover rounded opacity-90"
+                                                                    src={forumData.lastPost.author.profilePicture || "/default-avatar.png"}
+                                                                    alt={forumData.lastPost.author.username}></img>
+                                                            </Link>
                                                         </div>
                                                         <div className="overflow-hidden w-60">
                                                             <Link to={`/topics/${forumData.lastPost.topic._id}`}>
@@ -95,9 +97,10 @@ export default function Home() {
                                                             </Link>
                                                             <p className="text-sm text-neutral-500">
                                                                 {new Date(forumData.lastPost.createdAt).toLocaleString()} by{" "}
-                                                                <span className={`${roleColors[forumData.lastPost.author.role]} font-bold`}>
+                                                                <Link to={`/members/${forumData.lastPost.author.username}`}
+                                                                    className={`${roleColors[forumData.lastPost.author.role]} font-bold`}>
                                                                     {forumData.lastPost.author.username}
-                                                                </span>
+                                                                </Link>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -119,18 +122,21 @@ export default function Home() {
                     {topics.map(t => (
                         <div key={t._id} className="flex py-2 items-center gap-5">
                             <div className="h-10 w-10 me-3">
-                                <img className="w-full h-full object-cover rounded opacity-90"
-                                    src={t.author.profilePicture || "/default-avatar.png"}
-                                    alt={t.author.username}></img>
+                                <Link to={`/members/${t.author.username}`}>
+                                    <img className="w-full h-full object-cover rounded opacity-90"
+                                        src={t.author.profilePicture || "/default-avatar.png"}
+                                        alt={t.author.username}></img>
+                                </Link>
                             </div>                            <div>
                                 <Link to={`/topics/${t._id}`}>
                                     {t.title}
                                 </Link>
                                 <p className="text-sm text-neutral-500">
                                     {new Date(t.createdAt).toLocaleString()} by{" "}
-                                    <span className={`${roleColors[t.author.role]} font-bold`}>
+                                    <Link to={`/members/${t.author.username}`}
+                                        className={`${roleColors[t.author.role]} font-bold`}>
                                         {t.author.username}
-                                    </span>
+                                    </Link>
                                 </p>
                             </div>
                         </div>

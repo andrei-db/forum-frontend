@@ -28,8 +28,8 @@ export default function Profile() {
     if (loading) return <p>Loading...</p>;
     if (error) return <div className="mt-5 bg-neutral-900 p-3 rounded">The requested page could not be found.</div>;
     return (
-        
-        <div className="mt-5">
+
+        <div className="mt-5 text-neutral-300">
             <div className=" overflow-hidden">
                 <div className="ps-70 h-60 bg-neutral-800 flex gap-2 pb-3 flex-col
                  justify-end">
@@ -57,7 +57,17 @@ export default function Profile() {
                 </div>
             </div>
             <div className="mt-5 flex gap-5 h-80">
-                <div className="bg-neutral-900 w-1/5 rounded flex justify-center items-center">Empty</div>
+                <div className="bg-neutral-900 w-1/5 rounded">
+                    <div className="rounded p-3">
+                        <h2 className="text-2xl font-semibold">About</h2>
+                        <div>
+                            <div className="flex gap-5">
+                                <div>Birthday: </div>
+                                <div>0 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="bg-neutral-900 w-4/5 rounded flex justify-center items-center">
                     Theres nothing to show right now</div>
             </div>

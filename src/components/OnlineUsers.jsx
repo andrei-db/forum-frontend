@@ -1,41 +1,25 @@
-import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
-import { roleColors } from "../utils/roleColors";
 
-const socket = io(import.meta.env.VITE_API_BASE, { withCredentials: true });
+import { roleColors } from "../utils/roleColors";
+import { useOnlineUsers } from "../hooks/useOnlineUsers";
 
 export default function OnlineUsers() {
-    const [users, setUsers] = useState([]);
+    const { members, guests, loading } = useOnlineUsers();
 
-    useEffect(() => {
-        socket.on("online_users", (data) => {
-            setUsers(data);
-        });
-
-        return () => {
-            socket.off("online_users");
-        };
-    }, []);
+    if (loading) return <p>Loading online users…</p>;
 
     return (
-        <div className="p-4 bg-neutral-900 rounded-md text-neutral-300">
-            <h3 className="font-semibold mb-2">Online users</h3>
-            <div className="flex space-x-1">
-                {users.length === 0 ? (
-                    <p className="text-neutral-500 text-sm">No users online</p>
-                ) : (
-                    users.map((u, index) => (
-                        <div
-                            key={u._id}
-                            className={`${roleColors[u.role]} text-sm font-semibold`}
-                        >
-                            {u.username}
-                            {index < users.length - 1 && ", "}
-                        </div>
-                    ))
-                )}
-            </div>
+        <div className="rounded p-4 bg-neutral-800">
+            <h3 className="text-lg font-semibold mb-2">Who’s Online ( Active last 5 minutes )</h3>
 
+            <p className="text-sm mb-2">
+                {members.length} members, {guests} guests online
+            </p>
+
+            <ul className="list-disc list-inside">
+                {members.map((m) => (
+                        <span className={`${roleColors[m.role]}`}>{m.username}</span>
+                ))}
+            </ul>
         </div>
     );
 }
