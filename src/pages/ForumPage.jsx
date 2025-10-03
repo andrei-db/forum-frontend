@@ -35,7 +35,7 @@ export default function ForumPage() {
     if (error) return <p className="text-red-500">{error}</p>;
 
     return (
-        <div className="space-y-6 text-neutral-300">
+        <div className="space-y-6 mt-5 text-neutral-300">
             {forum && (
                 <div className="p-4 bg-neutral-900 rounded shadow">
                     <h2 className="text-2xl font-bold">{forum.name}</h2>

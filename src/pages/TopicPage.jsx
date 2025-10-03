@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { EditIcon, Trash2Icon } from "lucide-react";
 import { roleColors } from "../utils/roleColors";
+import { formatDate } from "../utils/formatDate";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -93,13 +94,29 @@ export default function TopicPage() {
         {topic.posts.map(post => (
           <div
             key={post._id}
-            className="p-4 gap-10 flex bg-neutral-900 rounded shadow-sm"
+            className="p-4 gap-10 flex items-start bg-neutral-900 rounded shadow-sm"
           >
-            <div className="rounded-lg flex flex-col bg-neutral-700 justify-end items-center h-72 w-64 overflow-hidden">
-
+            <div className="text-sm  rounded-lg bg-neutral-800
+            w-64">
               <img className="w-full h-full object-cover opacity-90" src={post.author.profilePicture || "/default-avatar.png"}></img>
 
-              <span className={`${roleColors[post.author.role]} py-2 bg-neutral-950 w-full text-center`}>{post.author.username}</span>
+              <div className="py-2">
+
+                <div className={`${roleColors[post.author.role]}  text-center text-lg`}>{post.author.username}</div>
+                <div className="text-center">{post.author.role}</div>
+
+                <div className="mt-5">
+                  <div className="flex justify-between px-3">
+                    <div>Joined:</div>
+                    <div>{formatDate(post.author.createdAt)}</div>
+                  </div>
+                  <div className="flex justify-between px-3">
+                    <div>Messages:</div>
+                    <div>100k</div>
+                  </div>
+                </div>
+              </div>
+
             </div>
             <div className="flex justify-between flex-col flex-1">
               <div>

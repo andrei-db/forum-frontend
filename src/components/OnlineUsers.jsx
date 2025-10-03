@@ -9,7 +9,7 @@ export default function OnlineUsers() {
 
     return (
         <div className="rounded p-4 bg-neutral-800">
-            <h3 className="text-lg font-semibold mb-2">Who’s Online ( Active last 5 minutes )</h3>
+            <h3 className="text-lg font-semibold mb-2">Who’s Online ( active last 5 minutes )</h3>
 
             <p className="text-sm mb-2">
                 {members.length} members, {guests} guests online

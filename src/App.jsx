@@ -1,31 +1,29 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import { Guest, Protected } from "./components/Protected";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Header from "./components/Header";
 import { AuthProvider } from "./context/AuthContext";
 import TopicPage from "./pages/TopicPage";
 import ForumPage from "./pages/ForumPage";
 import NewTopicPage from "./pages/NewTopicPage";
-import Footer from "./components/Footer";
 import AccountDetails from "./pages/AccountDetails";
 import AccountLayout from "./layouts/AccountLayout";
 import Security from "./pages/Security";
 import Profile from "./pages/Profile";
+import AdminLayout from "./admin/layouts/AdminLayout";
+import PublicLayout from "./layouts/PublicLayout";
+import AdminDashboard from "./admin/pages/AdminDashboard";
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
 
-        <div className="sm:mx-10">
-          <Navbar />
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
 
+        <Routes>
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Home />} />
             <Route
               path="/login"
               element={
@@ -57,11 +55,14 @@ export default function App() {
             <Route path="/forums/:id" element={<ForumPage />} />
             <Route path="/topics/:id" element={<TopicPage />} />
             <Route path="/members/:username" element={<Profile />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-          <Footer />
-        </div>
-        
+
+          </Route>
+          <Route path="/admin" element={<Protected role="admin"><AdminLayout /></Protected>}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );

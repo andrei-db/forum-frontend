@@ -4,7 +4,7 @@ import { roleColors } from "../utils/roleColors";
 import { useState, useEffect, useRef } from "react";
 export default function Navbar() {
   const nav = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const [open, setOpen] = useState(false);
   const menuRef = useRef();
@@ -20,7 +20,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-neutral-900 shadow text-neutral-300">
+    <nav className="flex justify-between items-center px-4 py-2 bg-neutral-900 shadow text-neutral-300">
       <Link to="/" className="text-lg font-bold">
         Forum MVP
       </Link>
@@ -54,13 +54,23 @@ export default function Navbar() {
 
             {open && (
               <div className="absolute right-0 mt-2 w-50 bg-neutral-900 rounded-md shadow-lg z-50">
-                 <Link
+                 {user.role === "admin" ? (
+                  <Link
+                    to="/admin/dashboard"
+                    className="block px-4 py-2 text-sm font-bold bg-black hover:bg-red-500"
+                    onClick={() => setOpen(false)}
+                  >
+                    Admin Panel
+                  </Link>
+                ) : null}
+                <Link
                   to={`/members/${user.username}`}
                   className="block px-4 py-2 text-sm hover:bg-neutral-700"
                   onClick={() => setOpen(false)}
                 >
                   Profile
                 </Link>
+               
                 <Link
                   to="/account/account-details"
                   className="block px-4 py-2 text-sm hover:bg-neutral-700"
