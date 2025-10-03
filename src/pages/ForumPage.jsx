@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
-import { MessageCircle } from "lucide-react";
+import { LockIcon, MessageCircle, PinIcon } from "lucide-react";
 import { roleColors } from "../utils/roleColors";
 
 export default function ForumPage() {
@@ -16,9 +16,6 @@ export default function ForumPage() {
             try {
                 const topicsData = await api(`/forums/${id}/topics-with-last-reply`);
                 const forumData = await api(`/forums/${id}`);
-
-                console.log("DEBUG forum:", forumData);
-
                 setTopics(topicsData);
                 setForum(forumData);
             } catch (err) {
@@ -51,11 +48,13 @@ export default function ForumPage() {
                 </Link>
             </div>
             <div>
+                {console.log(topics)}
                 {topics.length === 0 ? (
-                    <p className="text-neutral-300">Nu există topicuri încă.</p>
+                    <p className="text-neutral-300">There s no topics rights now</p>
                 ) : (
                     <div className="space-y-2">
                         {topics.map(topic => (
+                            
                             <div
                                 key={topic._id}
                                 className="p-4 flex justify-between gap-4 items-center rounded bg-neutral-900 hover:bg-neutral-800"
@@ -64,6 +63,7 @@ export default function ForumPage() {
                                     <div className="me-3">
                                         <MessageCircle />
                                     </div>
+                                    {console.log(topic)}
                                     <div>
                                         <Link
                                             to={`/topics/${topic._id}`}
@@ -78,6 +78,16 @@ export default function ForumPage() {
                                     </div>
                                 </div>
                                 <div className="flex gap-10 items-center">
+                                    <div className="flex gap-5">
+                                        {topic.closed ? (
+                                            <div className="bg-red-700 text-white rounded-full p-1.5">
+                                                <LockIcon className="w-4 h-4"/></div>
+                                        ):""}
+                                        {topic.sticky ? (
+                                            <div className="bg-green-700 text-white rounded-full p-1.5">
+                                                <PinIcon className="w-4 h-4"/></div>
+                                        ):""}
+                                        </div>
                                     <div>
                                         <p className="text-sm text-neutral-500">
                                             Replies: {topic.replies}

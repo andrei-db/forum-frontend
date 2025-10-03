@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { EditIcon, Trash2Icon } from "lucide-react";
 import { roleColors } from "../utils/roleColors";
 import { formatDate } from "../utils/formatDate";
+import { renderPost } from "../utils/renderPost.jsx";
 
 export default function TopicPage() {
   const { id } = useParams();
@@ -82,7 +83,7 @@ export default function TopicPage() {
 
 
   return (
-    <div className="space-y-6 text-neutral-300">
+    <div className="mt-5 space-y-6 text-neutral-300">
       <div className="p-4 bg-neutral-900 rounded shadow">
         <h2 className="text-2xl font-bold">{topic.title}</h2>
         <p className="text-sm">
@@ -126,7 +127,7 @@ export default function TopicPage() {
                 {editingPost === post._id ? (
                   <form onSubmit={(e) => handleEdit(e, post._id)} className="space-y-2">
                     <textarea
-                      className="w-full p-2 bg-neutral-700 rounded"
+                      className="w-full p-2 bg-neutral-700 h-90 rounded"
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
                     />
@@ -147,7 +148,9 @@ export default function TopicPage() {
                     </div>
                   </form>
                 ) : (
-                  <p className="text-neutral-400">{post.content}</p>
+                  <div className="whitespace-pre overflow-x-auto">
+                    {renderPost(post.content)}
+                  </div>
                 )}
               </div>
               {user && (user.id === post.author._id || user.role === "admin") && (
@@ -178,7 +181,10 @@ export default function TopicPage() {
         ))}
       </div>
 
-      <form
+      {topic.closed ? (
+        <p className="bg-neutral-800 rounded p-4 text-red-500 mt-4">This topic is closed and cannot receive new replies.</p>
+      ) : (
+        <form
         onSubmit={handleAddPost}
         className="p-4 mb-4 bg-neutral-900 rounded shadow space-y-2"
       >
@@ -197,6 +203,8 @@ export default function TopicPage() {
           {posting ? "Proccessing..." : "Send message"}
         </button>
       </form>
+      )}
+      
     </div>
   );
 }

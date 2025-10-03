@@ -12,9 +12,6 @@ export default function Profile() {
         async function loadData() {
             try {
                 const memberData = await api(`/members/${username}`);
-
-                console.log("DEBUG:", memberData);
-
                 setMember(memberData);
             } catch (err) {
                 console.error("Error in fetching member:", err);
@@ -61,10 +58,7 @@ export default function Profile() {
                     <div className="rounded p-3">
                         <h2 className="text-2xl font-semibold">About</h2>
                         <div>
-                            <div className="flex gap-5">
-                                <div>Birthday: </div>
-                                <div>0 </div>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
