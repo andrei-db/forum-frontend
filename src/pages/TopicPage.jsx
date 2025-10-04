@@ -84,127 +84,161 @@ export default function TopicPage() {
 
   return (
     <div className="mt-5 space-y-6 text-neutral-300">
-      <div className="p-4 bg-neutral-900 rounded shadow">
-        <h2 className="text-2xl font-bold">{topic.title}</h2>
-        <p className="text-sm">
-          <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> {" "}
-          {new Date(topic.createdAt).toLocaleString()}
-        </p>
+      <div className="p-4 bg-neutral-900 rounded shadow flex justify-between ">
+        <div className="">
+          <h2 className="text-2xl font-bold">{topic.title}</h2>
+          <p className="text-sm">
+            <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> {" "}
+            {new Date(topic.createdAt).toLocaleString()}
+          </p>
+        </div>
+        {user?.role === "admin" && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                const updated = await api(`/topics/${topic._id}/sticky`, { method: "PATCH" });
+                setTopic(prev => ({ ...prev, sticky: updated.topic.sticky }));
+              }}
+              className={`px-3 py-1 rounded ${topic.sticky ? "bg-yellow-600" : "bg-neutral-700"}`}
+            >
+              {topic.sticky ? "Unpin" : "Pin topic"}
+            </button>
+
+            <button
+              onClick={async () => {
+                const updated = await api(`/topics/${topic._id}/closed`, { method: "PATCH" });
+                setTopic(prev => ({ ...prev, closed: updated.topic.closed }));
+              }}
+              className={`px-3 py-1 rounded ${topic.closed ? "bg-red-600" : "bg-neutral-700"}`}
+            >
+              {topic.closed ? "Unlock" : "Lock topic"}
+            </button>
+          </div>
+        )}
+
       </div>
+       {topic.closed ? (
+        <p className="bg-neutral-800 rounded p-4 text-red-500 mt-4">This topic is closed and cannot receive new replies.</p>
+      ) : null}
       <div className="space-y-4">
-        {topic.posts.map(post => (
-          <div
-            key={post._id}
-            className="p-4 gap-10 flex items-start bg-neutral-900 rounded shadow-sm"
-          >
-            <div className="text-sm  rounded-lg bg-neutral-800
+        {topic.posts?.length ? (
+          topic.posts.map(post => (
+            <div
+              key={post._id}
+              className="p-4 gap-10 flex items-start bg-neutral-900 rounded shadow-sm"
+            >
+              <div className="text-sm  rounded-lg bg-neutral-800
             w-64">
-              <img className="w-full h-full object-cover opacity-90" src={post.author.profilePicture || "/default-avatar.png"}></img>
+                <img className="w-full h-full object-cover opacity-90" src={post.author.profilePicture || "/default-avatar.png"}></img>
 
-              <div className="py-2">
+                <div className="py-2">
 
-                <div className={`${roleColors[post.author.role]}  text-center text-lg`}>{post.author.username}</div>
-                <div className="text-center">{post.author.role}</div>
+                  <div className={`${roleColors[post.author.role]}  text-center text-lg`}>{post.author.username}</div>
+                  <div className="text-center">{post.author.role}</div>
 
-                <div className="mt-5">
-                  <div className="flex justify-between px-3">
-                    <div>Joined:</div>
-                    <div>{formatDate(post.author.createdAt)}</div>
-                  </div>
-                  <div className="flex justify-between px-3">
-                    <div>Messages:</div>
-                    <div>100k</div>
+                  <div className="mt-5">
+                    <div className="flex justify-between px-3">
+                      <div>Joined:</div>
+                      <div>{formatDate(post.author.createdAt)}</div>
+                    </div>
+                    <div className="flex justify-between px-3">
+                      <div>Messages:</div>
+                      <div>100k</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-            </div>
-            <div className="flex justify-between flex-col flex-1">
-              <div>
-                <p className="text-sm  text-neutral-300 mt-2">
-                  {new Date(post.createdAt).toLocaleString()}
-                </p>
-                {editingPost === post._id ? (
-                  <form onSubmit={(e) => handleEdit(e, post._id)} className="space-y-2">
-                    <textarea
-                      className="w-full p-2 bg-neutral-700 h-90 rounded"
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        type="submit"
-                        className="px-3 py-1 bg-green-600 text-white rounded"
-                      >
-                        Save
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditingPost(null)}
-                        className="px-3 py-1 bg-gray-400 text-white rounded"
-                      >
-                        Cancel
-                      </button>
+              </div>
+              <div className="flex justify-between flex-col flex-1">
+                <div>
+                  <p className="text-sm  text-neutral-300 mt-2">
+                    {new Date(post.createdAt).toLocaleString()}
+                  </p>
+                  {editingPost === post._id ? (
+                    <form onSubmit={(e) => handleEdit(e, post._id)} className="space-y-2">
+                      <textarea
+                        className="w-full p-2 bg-neutral-700 h-90 rounded"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          type="submit"
+                          className="px-3 py-1 bg-green-600 text-white rounded"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingPost(null)}
+                          className="px-3 py-1 bg-gray-400 text-white rounded"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="whitespace-pre overflow-x-auto">
+                      {renderPost(post.content)}
                     </div>
-                  </form>
-                ) : (
-                  <div className="whitespace-pre overflow-x-auto">
-                    {renderPost(post.content)}
+                  )}
+                </div>
+                {user && (user.id === post.author._id || user.role === "admin") && (
+                  <div className="flex justify-end gap-2 mt-2 text-sm">
+                    <button
+                      className="flex justify-center items-center gap-1 rounded-xs bg-blue-600 text-white p-1"
+                      onClick={() => {
+                        setEditingPost(post._id);
+                        setEditContent(post.content);
+                      }}
+                    >
+                      <EditIcon size={16} />
+                      Edit
+                    </button>
+                    <button
+                      className="flex justify-center items-center gap-1 rounded-xs bg-red-600 text-white p-1"
+                      onClick={() => handleDelete(post._id)}
+                    >
+                      <Trash2Icon size={16} />
+                      Delete
+                    </button>
                   </div>
                 )}
+
               </div>
-              {user && (user.id === post.author._id || user.role === "admin") && (
-                <div className="flex justify-end gap-2 mt-2 text-sm">
-                  <button
-                    className="flex justify-center items-center gap-1 rounded-xs bg-blue-600 text-white p-1"
-                    onClick={() => {
-                      setEditingPost(post._id);
-                      setEditContent(post.content);
-                    }}
-                  >
-                    <EditIcon size={16} />
-                    Edit
-                  </button>
-                  <button
-                    className="flex justify-center items-center gap-1 rounded-xs bg-red-600 text-white p-1"
-                    onClick={() => handleDelete(post._id)}
-                  >
-                    <Trash2Icon size={16} />
-                    Delete
-                  </button>
-                </div>
-              )}
 
             </div>
+          ))) : (
+          <p className="text-neutral-500 italic">No posts yet.</p>
+        )
 
-          </div>
-        ))}
+        }
       </div>
 
       {topic.closed ? (
         <p className="bg-neutral-800 rounded p-4 text-red-500 mt-4">This topic is closed and cannot receive new replies.</p>
       ) : (
         <form
-        onSubmit={handleAddPost}
-        className="p-4 mb-4 bg-neutral-900 rounded shadow space-y-2"
-      >
-        <textarea
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          className="w-full p-2 rounded"
-          placeholder="Write a message..."
-          rows="3"
-        />
-        <button
-          type="submit"
-          disabled={posting}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          onSubmit={handleAddPost}
+          className="p-4 mb-4 bg-neutral-900 rounded shadow space-y-2"
         >
-          {posting ? "Proccessing..." : "Send message"}
-        </button>
-      </form>
+          <textarea
+            value={newPost}
+            onChange={(e) => setNewPost(e.target.value)}
+            className="w-full p-2 rounded"
+            placeholder="Write a message..."
+            rows="3"
+          />
+          <button
+            type="submit"
+            disabled={posting}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {posting ? "Proccessing..." : "Send message"}
+          </button>
+        </form>
       )}
-      
+
     </div>
   );
 }
