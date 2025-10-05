@@ -89,7 +89,7 @@ export default function Home() {
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col md:flex-row justify-start md:items-center">
+                                            <div className="min-w-90 flex flex-col md:flex-row justify-start md:items-center">
                                                 <div className="flex mb-3 md:mb-0 md:flex-col justify-start md:justify-end items-center me-5">
                                                     <span>Posts<span className="me-2">:</span></span>
                                                     <span>{countData ? formatNumber(countData.messagesCount) : 0}</span>
