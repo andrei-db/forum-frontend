@@ -19,8 +19,6 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-
-
         <Routes>
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />

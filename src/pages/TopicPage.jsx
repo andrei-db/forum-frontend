@@ -80,7 +80,13 @@ export default function TopicPage() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
   if (!topic) return <p>Topic not found</p>;
-
+  if (!user) {
+    return (
+      <p className="text-yellow-500">
+        You must be logged in to create a topic.
+      </p>
+    );
+  }
 
   return (
     <div className="mt-5 space-y-6 text-neutral-300">
@@ -117,7 +123,7 @@ export default function TopicPage() {
         )}
 
       </div>
-       {topic.closed ? (
+      {topic.closed ? (
         <p className="bg-neutral-800 rounded p-4 text-red-500 mt-4">This topic is closed and cannot receive new replies.</p>
       ) : null}
       <div className="space-y-4">
