@@ -15,6 +15,10 @@ import Profile from "./pages/Profile";
 import AdminLayout from "./admin/layouts/AdminLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import AdminDashboard from "./admin/pages/AdminDashboard";
+import AdminForums from "./admin/pages/AdminForums";
+import AdminUsers from "./admin/pages/AdminUsers";
+import AdminSettings from "./admin/pages/AdminSettings";
+import AddForum from "./admin/pages/AdminAddForum";
 export default function App() {
   return (
     <AuthProvider>
@@ -58,6 +62,10 @@ export default function App() {
           <Route path="/admin" element={<Protected role="admin"><AdminLayout /></Protected>}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="forums" element={<AdminForums />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="forums/add" element={<AddForum />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

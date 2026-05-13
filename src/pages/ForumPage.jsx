@@ -28,7 +28,6 @@ export default function ForumPage() {
         loadData();
     }, [id]);
 
-    if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
 
     return (
@@ -56,13 +55,13 @@ export default function ForumPage() {
             <div>
                 {console.log(topics)}
                 {topics.length === 0 ? (
-                    <p className="text-neutral-300">There s no topics rights now</p>
+                    <p className="text-neutral-300">There are no topics rights now</p>
                 ) : (
                     <div className="space-y-2">
                         {topics.map(topic => (
 
                             <div
-                                key={topic._id}
+                                key={topic.id}
                                 className="p-4 flex justify-between gap-4 items-center rounded bg-neutral-900 hover:bg-neutral-800"
                             >
                                 <div className="flex items-center">
@@ -72,7 +71,7 @@ export default function ForumPage() {
                                     {console.log(topic)}
                                     <div>
                                         <Link
-                                            to={`/topics/${topic._id}`}
+                                            to={`/topics/${topic.id}`}
                                             className="font-medium"
                                         >
                                             {topic.title}

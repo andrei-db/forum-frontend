@@ -33,7 +33,7 @@ export default function Footer() {
 
 
   if (error) return <p className="text-red-500">{error}</p>;
-  if (countTopics === null) return <p>Loading...</p>;
+  //if (countTopics === null) return <p>Loading...</p>;
 
   return (
     <footer className="my-5 flex flex-col gap-5">

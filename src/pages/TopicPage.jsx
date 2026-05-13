@@ -28,7 +28,7 @@ export default function TopicPage() {
 
       setTopic({
         ...topic,
-        posts: topic.posts.map(p => p._id === postId ? updated : p),
+        posts: topic.posts.map(p => p.id === postId ? updated : p),
       });
       setEditingPost(null);
     } catch (err) {
@@ -43,7 +43,7 @@ export default function TopicPage() {
       await api(`/posts/${postId}`, { method: "DELETE" });
       setTopic({
         ...topic,
-        posts: topic.posts.filter(p => p._id !== postId),
+        posts: topic.posts.filter(p => p.id !== postId),
       });
     } catch (err) {
       alert(err.message);
@@ -77,16 +77,15 @@ export default function TopicPage() {
     }
   }
 
-  if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
   if (!topic) return <p>Topic not found</p>;
-  if (!user) {
-    return (
-      <p className="text-yellow-500">
-        You must be logged in to create a topic.
-      </p>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <p className="text-yellow-500">
+  //       You must be logged in to create a topic.
+  //     </p>
+  //   );
+  // }
 
   return (
     <div className="mt-5 space-y-6 text-neutral-300">
@@ -102,7 +101,7 @@ export default function TopicPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={async () => {
-                const updated = await api(`/topics/${topic._id}/sticky`, { method: "PATCH" });
+                const updated = await api(`/topics/${topic.id}/sticky`, { method: "PATCH" });
                 setTopic(prev => ({ ...prev, sticky: updated.topic.sticky }));
               }}
               className={`px-3 py-1 rounded ${topic.sticky ? "bg-yellow-600" : "bg-neutral-700"}`}
@@ -112,7 +111,7 @@ export default function TopicPage() {
 
             <button
               onClick={async () => {
-                const updated = await api(`/topics/${topic._id}/closed`, { method: "PATCH" });
+                const updated = await api(`/topics/${topic.id}/closed`, { method: "PATCH" });
                 setTopic(prev => ({ ...prev, closed: updated.topic.closed }));
               }}
               className={`px-3 py-1 rounded ${topic.closed ? "bg-red-600" : "bg-neutral-700"}`}
@@ -130,7 +129,7 @@ export default function TopicPage() {
         {topic.posts?.length ? (
           topic.posts.map(post => (
             <div
-              key={post._id}
+              key={post.id}
               className="p-4 gap-10 flex items-start bg-neutral-900 rounded shadow-sm"
             >
               <div className="text-sm  rounded-lg bg-neutral-800
@@ -160,8 +159,8 @@ export default function TopicPage() {
                   <p className="text-sm  text-neutral-300 mt-2">
                     {new Date(post.createdAt).toLocaleString()}
                   </p>
-                  {editingPost === post._id ? (
-                    <form onSubmit={(e) => handleEdit(e, post._id)} className="space-y-2">
+                  {editingPost === post.id ? (
+                    <form onSubmit={(e) => handleEdit(e, post.id)} className="space-y-2">
                       <textarea
                         className="w-full p-2 bg-neutral-700 h-90 rounded"
                         value={editContent}
@@ -189,12 +188,12 @@ export default function TopicPage() {
                     </div>
                   )}
                 </div>
-                {user && (user.id === post.author._id || user.role === "admin") && (
+                {user && (user.id === post.author.id || user.role === "admin") && (
                   <div className="flex justify-end gap-2 mt-2 text-sm">
                     <button
                       className="flex justify-center items-center gap-1 rounded-xs bg-blue-600 text-white p-1"
                       onClick={() => {
-                        setEditingPost(post._id);
+                        setEditingPost(post.id);
                         setEditContent(post.content);
                       }}
                     >
@@ -203,7 +202,7 @@ export default function TopicPage() {
                     </button>
                     <button
                       className="flex justify-center items-center gap-1 rounded-xs bg-red-600 text-white p-1"
-                      onClick={() => handleDelete(post._id)}
+                      onClick={() => handleDelete(post.id)}
                     >
                       <Trash2Icon size={16} />
                       Delete

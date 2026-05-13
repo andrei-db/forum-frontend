@@ -1,8 +1,22 @@
-export default function AdminDashboard() {
-    return (
-        <div className="mt-5text-neutral-300 h-full text-4xl flex justify-center items-center">
-                This will be the admin panel.
-        </div>
 
-    )
+import {
+    Search,
+    Home,
+    LinkIcon,
+    Bell,
+    Upload,
+    Plus, GripVertical,
+    FileImage,
+    ChevronDown,
+    Pencil,
+    Code
+} from "lucide-react";
+
+export default function AdminDashboard() {
+
+    return (
+        <>
+           dashboard
+        </>
+    );
 }

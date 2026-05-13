@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { roleColors } from "../utils/roleColors";
 import { useState, useEffect, useRef } from "react";
-import { CrownIcon, MenuIcon, SearchIcon, UsersIcon, X } from "lucide-react";
+import { CrownIcon, MenuIcon, SearchIcon, UsersIcon, X, MailIcon, BellIcon } from "lucide-react";
 export default function Navbar() {
   const nav = useNavigate();
   const { user, loading, logout } = useAuth();
@@ -84,20 +84,7 @@ export default function Navbar() {
          items-center gap-1 hover:bg-neutral-800 p-2 rounded">
           Forum MVP
         </Link>
-        <div className="hidden md:flex">
-          <Link to="/" className="text-lg font-semibold flex items-center gap-1 hover:bg-neutral-800 p-2 rounded">
-            <UsersIcon />
-            Staff
-          </Link>
-          <Link to="/" className="text-lg font-semibold flex items-center gap-1 hover:bg-neutral-800 p-2 rounded">
-            <CrownIcon />
-            Leaderboard
-          </Link>
-          <Link to="/" className="text-lg font-semibold flex items-center gap-1 hover:bg-neutral-800 p-2 rounded">
-            <SearchIcon />
-            Search
-          </Link>
-        </div>
+       
 
       </div>
 
@@ -109,7 +96,7 @@ export default function Navbar() {
               onClick={() => setOpen(!open)}
               className="flex p-2 items-center gap-1 hover:text-white"
             >
-              👋 Hi,{" "}
+              
               <span className={`${roleColors[user.role]} font-bold`}>
                 {user.username}
               </span>
@@ -128,7 +115,7 @@ export default function Navbar() {
                 />
               </svg>
             </button>
-
+       
             {open && (
               <div className="absolute right-0 w-50 bg-neutral-900 rounded-md shadow-lg z-50">
                 

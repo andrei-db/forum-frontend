@@ -38,7 +38,7 @@ export default function NewTopicPage() {
         body: JSON.stringify({ forum: id, title, content }),
       });
 
-      navigate(`/topics/${topic._id}`);
+      navigate(`/topics/${topic.id}`);
     } catch (err) {
       alert(err.message);
     } finally {

@@ -1,33 +1,59 @@
 import { useState } from "react";
 import { api } from "../api/client";
 import { useNavigate, Link } from "react-router-dom";
+import { User, Mail, Lock } from "lucide-react";
 
 export default function Register() {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   const nav = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
+
+    if (submitting) return;
+
     setError("");
+    setSubmitting(true);
+
     try {
       await api("/auth/register", {
         method: "POST",
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          username: form.username.trim(),
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
+        }),
       });
+
       nav("/login");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to create account");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center text-gray-200">
-      <div className="w-full max-w-md bg-neutral-900 rounded-2xl shadow-md p-8 my-20">
-        <h2 className="text-2xl font-bold mb-6 text-center text-neutral-300">Register</h2>
+    <div className="flex items-center justify-center text-neutral-200 my-20 px-4">
+      <div className="w-full max-w-md bg-neutral-900 rounded-2xl shadow-md p-8 border border-neutral-800">
+        <h2 className="text-2xl font-bold mb-2 text-center">
+          Create Account
+        </h2>
+
+        <p className="text-sm text-neutral-500 text-center mb-6">
+          Join the community and start posting.
+        </p>
 
         {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-100 p-2 rounded">
+          <div className="mb-4 text-sm text-red-300 bg-red-950/50 border border-red-900 p-3 rounded-lg">
             {error}
           </div>
         )}
@@ -37,55 +63,99 @@ export default function Register() {
             <label className="block text-sm font-medium text-neutral-300 mb-1">
               Username
             </label>
-            <input
-              type="text"
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full placeholder:text-neutral-500 bg-neutral-800 px-3 py-2 rounded-lg focus:border-blue-500"
-              placeholder="john_doe"
-              required
-            />
+
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+
+              <input
+                type="text"
+                value={form.username}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    username: e.target.value,
+                  }))
+                }
+                className="w-full bg-neutral-800 pl-10 pr-3 py-2 rounded-lg outline-none ring-1 ring-neutral-700 focus:ring-2 focus:ring-blue-500 placeholder:text-neutral-500 transition"
+                placeholder="john_doe"
+                autoComplete="username"
+                minLength={3}
+                maxLength={20}
+                required
+              />
+            </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-neutral-300 mb-1">
               Email
             </label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full placeholder:text-neutral-500 bg-neutral-800 px-3 py-2 rounded-lg focus:border-blue-500"
-              placeholder="you@example.com"
-              required
-            />
+
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    email: e.target.value,
+                  }))
+                }
+                className="w-full bg-neutral-800 pl-10 pr-3 py-2 rounded-lg outline-none ring-1 ring-neutral-700 focus:ring-2 focus:ring-blue-500 placeholder:text-neutral-500 transition"
+                placeholder="you@example.com"
+                autoComplete="email"
+                required
+              />
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-300 mb-1">
               Password
             </label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full px-3 py-2 placeholder:text-neutral-500 bg-neutral-800 rounded-lg focus:border-blue-500"
-              placeholder="••••••••"
-              required
-            />
+
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+
+              <input
+                type="password"
+                value={form.password}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    password: e.target.value,
+                  }))
+                }
+                className="w-full bg-neutral-800 pl-10 pr-3 py-2 rounded-lg outline-none ring-1 ring-neutral-700 focus:ring-2 focus:ring-blue-500 placeholder:text-neutral-500 transition"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                minLength={6}
+                required
+              />
+            </div>
+
+            <p className="text-xs text-neutral-500 mt-1">
+              Minimum 6 characters.
+            </p>
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+            disabled={submitting}
+            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition"
           >
-            Sign Up
+            {submitting ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 
-        <p className="text-sm text-gray-600 mt-6 text-center">
+        <p className="text-sm text-neutral-500 mt-6 text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link
+            to="/login"
+            className="text-blue-500 hover:text-blue-400 hover:underline"
+          >
             Login
           </Link>
         </p>
