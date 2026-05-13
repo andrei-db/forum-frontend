@@ -11,7 +11,19 @@ import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "../../api/client";
+import {
+    DndContext,
+    closestCenter,
+} from "@dnd-kit/core";
 
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+    arrayMove,
+    useSortable,
+} from "@dnd-kit/sortable";
+
+import { CSS } from "@dnd-kit/utilities";
 export default function AdminForums() {
     const [categories, setCategories] = useState([]);
     const [openCategories, setOpenCategories] = useState({});
@@ -21,6 +33,69 @@ export default function AdminForums() {
         loadForums();
     }, []);
 
+    async function handleDragEnd(event) {
+        const { active, over } = event;
+
+        if (!over || active.id === over.id) return;
+
+        const oldIndex = categories.findIndex((cat) => cat.id === active.id);
+        const newIndex = categories.findIndex((cat) => cat.id === over.id);
+
+        const newCategories = arrayMove(categories, oldIndex, newIndex);
+
+        setCategories(newCategories);
+
+        try {
+            await api("/categories/reorder", {
+                method: "PATCH",
+                body: JSON.stringify({
+                    categories: newCategories.map((cat) => ({
+                        id: cat.id,
+                    })),
+                }),
+            });
+        } catch (err) {
+            alert(err.message);
+            loadForums();
+        }
+    }
+    async function handleForumDragEnd(event, categoryId) {
+        const { active, over } = event;
+
+        if (!over || active.id === over.id) return;
+
+        const category = categories.find((cat) => cat.id === categoryId);
+        if (!category) return;
+
+        const oldIndex = category.forums.findIndex((forum) => forum.id === active.id);
+        const newIndex = category.forums.findIndex((forum) => forum.id === over.id);
+
+        if (oldIndex === -1 || newIndex === -1) return;
+        
+        const newForums = arrayMove(category.forums, oldIndex, newIndex);
+
+        setCategories((prev) =>
+            prev.map((cat) =>
+                cat.id === categoryId
+                    ? { ...cat, forums: newForums }
+                    : cat
+            )
+        );
+
+        try {
+            await api("/forums/reorder", {
+                method: "PATCH",
+                body: JSON.stringify({
+                    forums: newForums.map((forum) => ({
+                        id: forum.id,
+                    })),
+                }),
+            });
+        } catch (err) {
+            alert(err.message);
+            loadForums();
+        }
+    }
     async function loadForums() {
         try {
             const data = await api("/categories");
@@ -110,7 +185,7 @@ export default function AdminForums() {
             )}
 
             <div className="space-y-4">
-                {categories.map((category) => {
+                {/* {categories.map((category) => {
                     const isOpen = openCategories[category.id];
 
                     return (
@@ -150,7 +225,7 @@ export default function AdminForums() {
                                         to={`/admin/forums/add?categoryId=${category.id}`}
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                         <PlusCircle size={26} className="text-neutral-500" />
+                                        <PlusCircle size={26} className="text-neutral-500" />
                                     </NavLink>
                                     <NavLink
                                         to={`/admin/categories/${category.id}/edit`}
@@ -254,8 +329,301 @@ export default function AdminForums() {
                             </AnimatePresence>
                         </div>
                     );
-                })}
+                })} */}
+                <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext
+                        items={categories.map((category) => category.id)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <div className="space-y-4">
+                            {categories.map((category) => (
+                                <SortableCategory
+                                    key={category.id}
+                                    category={category}
+                                    openCategories={openCategories}
+                                    toggleCategory={toggleCategory}
+                                    deleteCategory={deleteCategory}
+                                    deleteForum={deleteForum}
+                                    handleForumDragEnd={handleForumDragEnd}
+                                />
+                            ))}
+                        </div>
+                    </SortableContext>
+                </DndContext>
             </div>
         </section>
+    );
+}
+function SortableCategory({
+    category,
+    openCategories,
+    toggleCategory,
+    deleteCategory,
+    deleteForum,
+    handleForumDragEnd,
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: category.id,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    const isOpen = openCategories[category.id];
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={`bg-neutral-800 border border-neutral-800 overflow-hidden ${isDragging ? "opacity-60" : ""
+                }`}
+        >
+            <div
+                onClick={() => toggleCategory(category.id)}
+                className="w-full px-6 py-5 bg-neutral-900 flex items-center justify-between text-left hover:bg-neutral-900 transition cursor-pointer"
+            >
+                <div className="flex gap-5 items-center">
+                    <button
+                        type="button"
+                        onClick={(e) => e.stopPropagation()}
+                        {...attributes}
+                        {...listeners}
+                        className="text-neutral-400 hover:text-white cursor-grab active:cursor-grabbing"
+                    >
+                        <Grip size={22} />
+                    </button>
+
+                    <ChevronDown
+                        size={22}
+                        className={`text-neutral-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+                            }`}
+                    />
+
+                    <div>
+                        <h2 className="text-xl font-bold text-white">
+                            {category.name}
+                        </h2>
+
+                        {category.description && (
+                            <p className="text-neutral-500 text-sm mt-1">
+                                {category.description}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex gap-5">
+                    <NavLink
+                        to={`/admin/forums/add?categoryId=${category.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <PlusCircle
+                            size={26}
+                            className="text-neutral-500 hover:text-white"
+                        />
+                    </NavLink>
+
+                    <NavLink
+                        to={`/admin/categories/${category.id}/edit`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <Pencil
+                            size={26}
+                            className="text-neutral-500 hover:text-white"
+                        />
+                    </NavLink>
+
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            deleteCategory(category.id);
+                        }}
+                    >
+                        <XCircle
+                            size={26}
+                            className="text-red-500 hover:text-red-400"
+                        />
+                    </button>
+                </div>
+            </div>
+
+            <AnimatePresence initial={false}>
+                {isOpen && (
+                    <motion.div
+                        initial={{
+                            height: 0,
+                            opacity: 0,
+                        }}
+                        animate={{
+                            height: "auto",
+                            opacity: 1,
+                        }}
+                        exit={{
+                            height: 0,
+                            opacity: 0,
+                        }}
+                        transition={{
+                            duration: 0.25,
+                            ease: "easeInOut",
+                        }}
+                        className="overflow-hidden"
+                    >
+                        <div className="divide-y divide-neutral-800">
+                            {category.forums.length === 0 ? (
+                                <div className="p-6 text-neutral-500">
+                                    No forums in this category.
+                                </div>
+                            ) : (
+                                // category.forums.map((forum) => (
+                                //     <div
+                                //         key={forum.id}
+                                //         className="flex items-center justify-between px-6 py-5 hover:bg-neutral-800/40 transition"
+                                //     >
+                                //         <div className="flex items-center gap-4">
+                                //             <div className="w-11 h-11 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                                //                 <MessageCircle
+                                //                     size={20}
+                                //                     className="text-blue-400"
+                                //                 />
+                                //             </div>
+
+                                //             <div>
+                                //                 <h3 className="font-semibold text-white">
+                                //                     {forum.name}
+                                //                 </h3>
+
+                                //                 <p className="text-sm text-neutral-500">
+                                //                     {forum.description || "No description"}
+                                //                 </p>
+                                //             </div>
+                                //         </div>
+
+                                //         <div className="flex items-center gap-5">
+                                //             <button type="button">
+                                //                 <PlusCircle
+                                //                     size={20}
+                                //                     className="text-neutral-500 hover:text-white"
+                                //                 />
+                                //             </button>
+
+                                //             <NavLink to={`/admin/forums/${forum.id}/edit`}>
+                                //                 <Pencil
+                                //                     size={20}
+                                //                     className="text-neutral-500 hover:text-white"
+                                //                 />
+                                //             </NavLink>
+
+                                //             <button
+                                //                 type="button"
+                                //                 onClick={(e) => {
+                                //                     e.stopPropagation();
+                                //                     deleteForum(forum.id);
+                                //                 }}
+                                //             >
+                                //                 <XCircle
+                                //                     size={20}
+                                //                     className="text-red-500 hover:text-red-400"
+                                //                 />
+                                //             </button>
+                                //         </div>
+                                //     </div>
+                                // ))
+                                <DndContext
+                                    collisionDetection={closestCenter}
+                                    onDragEnd={(event) => handleForumDragEnd(event, category.id)}
+                                >
+                                    <SortableContext
+                                        items={category.forums.map((forum) => forum.id)}
+                                        strategy={verticalListSortingStrategy}
+                                    >
+                                        {category.forums.map((forum) => (
+                                            <SortableForum
+                                                key={forum.id}
+                                                forum={forum}
+                                                deleteForum={deleteForum}
+                                            />
+                                        ))}
+                                    </SortableContext>
+                                </DndContext>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+function SortableForum({ forum, deleteForum }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: forum.id,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={`flex items-center justify-between px-6 py-5 hover:bg-neutral-800/40 transition ${isDragging ? "opacity-60" : ""
+                }`}
+        >
+            <div className="flex items-center gap-4">
+                <button
+                    type="button"
+                    {...attributes}
+                    {...listeners}
+                    className="text-neutral-500 hover:text-white cursor-grab active:cursor-grabbing"
+                >
+                    <Grip size={20} />
+                </button>
+
+                <div className="w-11 h-11 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                    <MessageCircle size={20} className="text-blue-400" />
+                </div>
+
+                <div>
+                    <h3 className="font-semibold text-white">
+                        {forum.name}
+                    </h3>
+
+                    <p className="text-sm text-neutral-500">
+                        {forum.description || "No description"}
+                    </p>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-5">
+                <NavLink to={`/admin/forums/${forum.id}/edit`}>
+                    <Pencil size={20} className="text-neutral-500 hover:text-white" />
+                </NavLink>
+
+                <button
+                    type="button"
+                    onClick={() => deleteForum(forum.id)}
+                >
+                    <XCircle size={20} className="text-red-500 hover:text-red-400" />
+                </button>
+            </div>
+        </div>
     );
 }
