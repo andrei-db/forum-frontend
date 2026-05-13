@@ -17,7 +17,9 @@ export default function TopicPage() {
   const [editingPost, setEditingPost] = useState(null);
   const [editContent, setEditContent] = useState("");
   const { user } = useAuth();
-
+  function isFirstPost(post) {
+  return topic?.firstPostId === post.id;
+}
   async function handleEdit(e, postId) {
     e.preventDefault();
     try {
@@ -41,10 +43,11 @@ export default function TopicPage() {
 
     try {
       await api(`/posts/${postId}`, { method: "DELETE" });
-      setTopic({
-        ...topic,
-        posts: topic.posts.filter(p => p.id !== postId),
-      });
+      setTopic(prev => ({
+        ...prev,
+        posts: prev.posts.filter(p => p.id !== postId),
+        postsCount: Math.max((prev.postsCount || 1) - 1, 1),
+      }));
     } catch (err) {
       alert(err.message);
     }
@@ -68,7 +71,12 @@ export default function TopicPage() {
         body: JSON.stringify({ topic: id, content: newPost }),
       });
 
-      setTopic({ ...topic, posts: [...topic.posts, post] });
+      setTopic(prev => ({
+        ...prev,
+        posts: [...prev.posts, post],
+        postsCount: (prev.postsCount || 0) + 1,
+        lastPostId: post.id,
+      }));
       setNewPost("");
     } catch (err) {
       alert(err.message);
@@ -200,13 +208,16 @@ export default function TopicPage() {
                       <EditIcon size={16} />
                       Edit
                     </button>
-                    <button
-                      className="flex justify-center items-center gap-1 rounded-xs bg-red-600 text-white p-1"
-                      onClick={() => handleDelete(post.id)}
-                    >
-                      <Trash2Icon size={16} />
-                      Delete
-                    </button>
+
+                    {!isFirstPost(post) && (
+                      <button
+                        className="flex justify-center items-center gap-1 rounded-xs bg-red-600 text-white p-1"
+                        onClick={() => handleDelete(post.id)}
+                      >
+                        <Trash2Icon size={16} />
+                        Delete
+                      </button>
+                    )}
                   </div>
                 )}
 

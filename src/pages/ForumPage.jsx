@@ -95,7 +95,7 @@ export default function ForumPage() {
                                     </div>
                                     <div>
                                         <p className="text-sm text-neutral-500">
-                                            Replies: {topic.replies}
+                                            Posts: {topic.postsCount}
                                         </p>
                                     </div>
                                     <div className="flex">
