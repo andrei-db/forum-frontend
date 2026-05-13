@@ -18,7 +18,9 @@ import AdminDashboard from "./admin/pages/AdminDashboard";
 import AdminForums from "./admin/pages/AdminForums";
 import AdminUsers from "./admin/pages/AdminUsers";
 import AdminSettings from "./admin/pages/AdminSettings";
-import AddForum from "./admin/pages/AdminAddForum";
+import AdminAddForum from "./admin/pages/AdminAddForum";
+import AdminEditForum from "./admin/pages/AdminEditForum";
+import AdminEditCategory from "./admin/pages/AdminEditCategory";
 export default function App() {
   return (
     <AuthProvider>
@@ -65,7 +67,9 @@ export default function App() {
             <Route path="forums" element={<AdminForums />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="settings" element={<AdminSettings />} />
-            <Route path="forums/add" element={<AddForum />} />
+            <Route path="forums/add" element={<AdminAddForum />} />
+            <Route path="forums/:id/edit" element={<AdminEditForum />} />
+            <Route path="categories/:id/edit" element={<AdminEditCategory />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

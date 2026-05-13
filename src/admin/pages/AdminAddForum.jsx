@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Bold,
   Italic,
@@ -15,29 +15,41 @@ import { api } from "../../api/client";
 
 const tabs = ["Forum Settings", "Customization", "Rules", "Topics & Posts"];
 
-
-
 export default function AdminAddForum() {
   const [activeTab, setActiveTab] = useState("Forum Settings");
+  const [searchParams] = useSearchParams();
+
+  const preselectedCategoryId = searchParams.get("categoryId");
+  const isCategoryPreselected = Boolean(preselectedCategoryId);
+
   const [form, setForm] = useState({
     name: "",
     description: "",
-    nodeType: "category",
+    nodeType: isCategoryPreselected ? "forum" : "category",
     forumType: "discussion",
-    categoryId: "",
+    categoryId: preselectedCategoryId || "",
     redirectUrl: "",
   });
+
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
+
   const navigate = useNavigate();
+
+  const selectedCategory = categories.find(
+    (category) => category.id === form.categoryId
+  );
+
   useEffect(() => {
     api("/categories")
       .then(setCategories)
       .catch((err) => setError(err.message));
   }, []);
+
   const submit = async (e) => {
     e.preventDefault();
+
     if (!form.name.trim()) {
       setError("Name is required");
       return;
@@ -47,15 +59,19 @@ export default function AdminAddForum() {
       setError("Parent category is required");
       return;
     }
-    if (form.nodeType === "forum" && form.forumType === "redirect" && !form.redirectUrl.trim()) {
+
+    if (
+      form.nodeType === "forum" &&
+      form.forumType === "redirect" &&
+      !form.redirectUrl.trim()
+    ) {
       setError("Redirect URL is required");
       return;
     }
+
     try {
       setSubmitting(true);
       setError("");
-
-
 
       if (form.nodeType === "category") {
         await api("/categories", {
@@ -75,10 +91,12 @@ export default function AdminAddForum() {
             description: form.description.trim(),
             categoryId: form.categoryId,
             type: form.forumType,
-            redirectUrl: form.forumType === "redirect" ? form.redirectUrl.trim() : null,
+            redirectUrl:
+              form.forumType === "redirect" ? form.redirectUrl.trim() : null,
           }),
         });
       }
+
       navigate("/admin/forums");
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -86,9 +104,12 @@ export default function AdminAddForum() {
       setSubmitting(false);
     }
   };
+
   return (
     <section className="p-8">
-      <h1 className="text-2xl font-bold mb-8">Add Forum</h1>
+      <h1 className="text-2xl font-bold mb-8">
+        {isCategoryPreselected ? "Add Forum" : "Add Forum / Category"}
+      </h1>
 
       <div className="bg-neutral-900 border border-[#2b313a] rounded-lg overflow-hidden">
         <div className="flex items-center gap-2 p-3 border-b border-[#2b313a]">
@@ -97,10 +118,11 @@ export default function AdminAddForum() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 rounded-md font-semibold transition ${activeTab === tab
-                ? "bg-neutral-800 text-white"
-                : "text-neutral-400 hover:text-white hover:bg-[#2a3038]"
-                }`}
+              className={`px-6 py-3 rounded-md font-semibold transition ${
+                activeTab === tab
+                  ? "bg-neutral-800 text-white"
+                  : "text-neutral-400 hover:text-white hover:bg-[#2a3038]"
+              }`}
             >
               {tab}
             </button>
@@ -110,6 +132,12 @@ export default function AdminAddForum() {
         <div className="px-5 py-6 border-b border-[#2b313a]">
           <h2 className="text-xl font-bold">{activeTab}</h2>
         </div>
+
+        {error && (
+          <div className="mx-5 mt-5 text-red-400 bg-red-950/40 border border-red-900 p-3 rounded-lg">
+            {error}
+          </div>
+        )}
 
         {activeTab === "Forum Settings" && (
           <form onSubmit={submit}>
@@ -131,18 +159,23 @@ export default function AdminAddForum() {
                     <button type="button" className="hover:text-white">
                       <Bold size={18} />
                     </button>
+
                     <button type="button" className="hover:text-white">
                       <Italic size={18} />
                     </button>
+
                     <button type="button" className="hover:text-white">
                       <Underline size={18} />
                     </button>
+
                     <button type="button" className="hover:text-white">
                       <LinkIcon size={18} />
                     </button>
+
                     <button type="button" className="hover:text-white">
                       <Smile size={18} />
                     </button>
+
                     <button type="button" className="hover:text-white">
                       <MoreHorizontal size={20} />
                     </button>
@@ -162,6 +195,7 @@ export default function AdminAddForum() {
                   <div className="m-3 bg-[#303743] rounded-md px-5 py-4 flex items-center justify-between text-neutral-300">
                     <div className="flex items-start gap-3">
                       <Paperclip size={20} className="text-neutral-500 mt-1" />
+
                       <div>
                         <p className="font-semibold">
                           Drag files here to attach, or{" "}
@@ -169,6 +203,7 @@ export default function AdminAddForum() {
                             choose files...
                           </span>
                         </p>
+
                         <p className="text-sm text-neutral-500">
                           Max total size: 48.83 MB
                         </p>
@@ -182,77 +217,88 @@ export default function AdminAddForum() {
             </FormRow>
 
             <FormRow label="Type" required>
-              <label className="flex items-start gap-4 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={form.nodeType === "category"}
-                  onChange={() =>
-                    setForm((prev) => ({
-                      ...prev,
-                      nodeType: "category",
-                      forumType: "discussion",
-                      categoryId: "",
-                      redirectUrl: "",
-                    }))
-                  }
-                  className="mt-1 w-5 h-5 accent-blue-600"
+              <div className="space-y-5">
+                {!isCategoryPreselected && (
+                  <label className="flex items-start gap-4 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={form.nodeType === "category"}
+                      onChange={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          nodeType: "category",
+                          forumType: "discussion",
+                          categoryId: "",
+                          redirectUrl: "",
+                        }))
+                      }
+                      className="mt-1 w-5 h-5 accent-blue-600"
+                    />
 
-                />
+                    <div>
+                      <p className="font-bold">Category</p>
+                      <p className="text-neutral-500">
+                        Container for other forums. Nothing can be posted
+                        directly within them.
+                      </p>
+                    </div>
+                  </label>
+                )}
 
-                <div>
-                  <p className="font-bold">Category</p>
-                  <p className="text-neutral-500">
-                    Container for other forums. Nothing can be posted directly within them.
-                  </p>
-                </div>
-              </label>
-              <label className="flex items-start gap-4 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={form.nodeType === "forum" && form.forumType === "discussion"}
-                  onChange={() =>
-                    setForm((prev) => ({
-                      ...prev,
-                      nodeType: "forum",
-                      forumType: "discussion",
-                      redirectUrl: "",
-                    }))
-                  }
-                  className="mt-1 w-5 h-5 accent-blue-600"
-                />
+                <label className="flex items-start gap-4 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={
+                      form.nodeType === "forum" &&
+                      form.forumType === "discussion"
+                    }
+                    onChange={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        nodeType: "forum",
+                        forumType: "discussion",
+                        redirectUrl: "",
+                      }))
+                    }
+                    className="mt-1 w-5 h-5 accent-blue-600"
+                  />
 
-                <div>
-                  <p className="font-bold">Forum</p>
-                  <p className="text-neutral-500">
-                    Users can start topics that other users can reply to.
-                    Replies are shown in the order they're posted.
-                  </p>
-                </div>
-              </label>
-              <label className="flex items-start gap-4 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={form.nodeType === "forum" && form.forumType === "redirect"}
-                  onChange={() =>
-                    setForm((prev) => ({
-                      ...prev,
-                      nodeType: "forum",
-                      forumType: "redirect",
-                    }))
-                  }
-                  className="mt-1 w-5 h-5 accent-blue-600"
-                />
+                  <div>
+                    <p className="font-bold">Forum</p>
+                    <p className="text-neutral-500">
+                      Users can start topics that other users can reply to.
+                    </p>
+                  </div>
+                </label>
 
-                <div>
-                  <p className="font-bold">Redirect</p>
-                  <p className="text-neutral-500">
-                    Redirects users to another location when clicked on.
-                  </p>
-                </div>
-              </label>
+                <label className="flex items-start gap-4 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={
+                      form.nodeType === "forum" &&
+                      form.forumType === "redirect"
+                    }
+                    onChange={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        nodeType: "forum",
+                        forumType: "redirect",
+                      }))
+                    }
+                    className="mt-1 w-5 h-5 accent-blue-600"
+                  />
+
+                  <div>
+                    <p className="font-bold">Redirect</p>
+                    <p className="text-neutral-500">
+                      Redirects users to another location when clicked on.
+                    </p>
+                  </div>
+                </label>
+              </div>
             </FormRow>
 
-            {form.nodeType === "forum" && (
+            {form.nodeType === "forum" && !isCategoryPreselected && (
               <FormRow label="Parent Category" required>
                 <select
                   value={form.categoryId}
@@ -276,6 +322,14 @@ export default function AdminAddForum() {
               </FormRow>
             )}
 
+            {isCategoryPreselected && (
+              <FormRow label="Parent Category">
+                <div className="text-neutral-300 font-medium">
+                  {selectedCategory?.name || "Selected category"}
+                </div>
+              </FormRow>
+            )}
+
             {form.nodeType === "forum" && form.forumType === "redirect" && (
               <FormRow label="Redirect URL" required>
                 <input
@@ -293,6 +347,7 @@ export default function AdminAddForum() {
                 />
               </FormRow>
             )}
+
             <div className="flex justify-center p-5 border-t border-[#2b313a]">
               <button
                 type="submit"
@@ -308,12 +363,6 @@ export default function AdminAddForum() {
         {activeTab !== "Forum Settings" && (
           <div className="p-10 text-neutral-500">
             {activeTab} settings coming soon.
-          </div>
-
-        )}
-        {error && (
-          <div className="mx-5 mt-5 text-red-400 bg-red-950/40 border border-red-900 p-3 rounded-lg">
-            {error}
           </div>
         )}
       </div>

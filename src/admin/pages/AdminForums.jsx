@@ -145,12 +145,19 @@ export default function AdminForums() {
 
                                 </div>
                                 <div className="flex gap-5">
-                                    <button>
-                                        <PlusCircle size={26} className="text-neutral-500" />
-                                    </button>
-                                    <button>
+
+                                    <NavLink
+                                        to={`/admin/forums/add?categoryId=${category.id}`}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                         <PlusCircle size={26} className="text-neutral-500" />
+                                    </NavLink>
+                                    <NavLink
+                                        to={`/admin/categories/${category.id}/edit`}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
                                         <Pencil size={26} className="text-neutral-500" />
-                                    </button>
+                                    </NavLink>
 
                                     <button
                                         onClick={(e) => {
@@ -222,10 +229,12 @@ export default function AdminForums() {
                                                             <button>
                                                                 <PlusCircle size={20} className="text-neutral-500" />
                                                             </button>
-                                                            <button>
-                                                                <Pencil size={20} className="text-neutral-500" />
-                                                            </button>
 
+                                                            <NavLink
+                                                                to={`/admin/forums/${forum.id}/edit`}
+                                                            >
+                                                                <Pencil size={20} className="text-neutral-500" />
+                                                            </NavLink>
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
