@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import { LockIcon, MessageCircle, PinIcon } from "lucide-react";
 import { roleColors } from "../utils/roleColors";
 import { useAuth } from "../context/AuthContext";
+import Breadcrumbs from "../components/Breadcrumbs";
 export default function ForumPage() {
     const { id } = useParams();
     const [topics, setTopics] = useState([]);
@@ -32,11 +33,25 @@ export default function ForumPage() {
 
     return (
         <div className="space-y-6 mt-5 text-neutral-300">
+            
             {forum && (
+                <>
+                <Breadcrumbs
+                items={[
+                    {
+                        label: forum.category.name,
+                        to: `/categories/${forum.category.id}`,
+                    },
+                    {
+                        label: forum.name,
+                    },
+                ]}
+            />
                 <div className="p-4 bg-neutral-900 rounded shadow">
                     <h2 className="text-2xl font-bold">{forum.name}</h2>
                     <p className="text-neutral-300">{forum.description}</p>
                 </div>
+                </>
             )}
             <div className="flex justify-end items-center">
                 {user ? (
@@ -53,7 +68,6 @@ export default function ForumPage() {
                 )}
             </div>
             <div>
-                {console.log(topics)}
                 {topics.length === 0 ? (
                     <p className="text-neutral-300">There are no topics rights now</p>
                 ) : (

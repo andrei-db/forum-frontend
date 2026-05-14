@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { formatNumber } from "../utils/formatNumber";
 import { roleColors } from "../utils/roleColors";
-
+import Breadcrumbs from "../components/Breadcrumbs";
+import Search from "../components/Search";
 function HomeSkeleton() {
     return (
         <div className="mt-5 text-neutral-300 gap-5 flex flex-col lg:flex-row items-start">
@@ -79,164 +80,171 @@ export default function Home() {
     if (error) return <p className="text-red-500">{error}</p>;
 
     return (
-        <div className="mt-5 text-neutral-300 gap-5 flex flex-col lg:flex-row items-start">
-            <div className="w-full md:flex-1">
-                {data.categories.map((cat) => (
-                    <div key={cat.id} className="rounded-md shadow p-4 bg-neutral-900 mb-5">
-                        <h3 className="text-xl font-semibold mb-2">{cat.name}</h3>
-                        <p className="text-neutral-500 mb-4">{cat.description}</p>
+        <>
+    
+                <Breadcrumbs items={[]} />
+           
 
-                        <div className="divide-y divide-neutral-800">
-                            {cat.forums.map((forum) => {
-                                const forumData = latestPostsByForumId.get(forum.id);
-                                const messagesCount = messagesCountByForumId.get(forum.id) || 0;
+            <div className="mt-5 text-neutral-300 gap-5 flex flex-col lg:flex-row items-start">
 
-                                return (
-                                    <div key={forum.id} className="flex gap-3 items-center">
-                                        <MessageCircle className="shrink-0" />
+                <div className="w-full md:flex-1">
+                    {data.categories.map((cat) => (
+                        <div key={cat.id} className="rounded-md shadow p-4 bg-neutral-900 mb-5">
+                            <h3 className="text-xl font-semibold mb-2">{cat.name}</h3>
+                            <p className="text-neutral-500 mb-4">{cat.description}</p>
 
-                                        <div className="flex flex-col md:flex-row flex-1 justify-between py-2">
-                                            <div className="py-2">
-                                                {forum.type === "redirect" ? (
-                                                    <a
-                                                        href={forum.redirectUrl}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="font-medium hover:text-blue-400"
-                                                    >
-                                                        {forum.name}
-                                                    </a>
-                                                ) : (
-                                                    <Link
-                                                        to={`/forums/${forum.id}`}
-                                                        className="font-medium hover:text-blue-400"
-                                                    >
-                                                        {forum.name}
-                                                    </Link>
-                                                )}
+                            <div className="divide-y divide-neutral-800">
+                                {cat.forums.map((forum) => {
+                                    const forumData = latestPostsByForumId.get(forum.id);
+                                    const messagesCount = messagesCountByForumId.get(forum.id) || 0;
 
-                                                <span className="text-neutral-500 text-sm flex items-center gap-1">
-                                                    {forum.description}
-                                                </span>
-                                            </div>
+                                    return (
+                                        <div key={forum.id} className="flex gap-3 items-center">
+                                            <MessageCircle className="shrink-0" />
 
-                                            <div className="min-w-90 flex flex-col md:flex-row justify-start md:items-center">
-                                                <div className="flex mb-3 md:mb-0 md:flex-col justify-start md:justify-end items-center me-5">
+                                            <div className="flex flex-col md:flex-row flex-1 justify-between py-2">
+                                                <div className="py-2">
+                                                    {forum.type === "redirect" ? (
+                                                        <a
+                                                            href={forum.redirectUrl}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="font-medium hover:text-blue-400"
+                                                        >
+                                                            {forum.name}
+                                                        </a>
+                                                    ) : (
+                                                        <Link
+                                                            to={`/forums/${forum.id}`}
+                                                            className="font-medium hover:text-blue-400"
+                                                        >
+                                                            {forum.name}
+                                                        </Link>
+                                                    )}
 
-
-                                                    <span>
-                                                        Topics<span className="me-2">:</span>
+                                                    <span className="text-neutral-500 text-sm flex items-center gap-1">
+                                                        {forum.description}
                                                     </span>
-                                                    <span>{formatNumber(messagesCount)}</span>
                                                 </div>
 
-                                                {forumData?.lastPost ? (
-                                                    <div className="flex items-center text-sm mb-2 md:mb-0">
-                                                        <Link
-                                                            to={`/members/${forumData.lastPost.author.username}`}
-                                                            className="h-10 w-10 me-2 shrink-0"
-                                                        >
-                                                            <img
-                                                                className="w-full h-full object-cover rounded-full opacity-90"
-                                                                src={
-                                                                    forumData.lastPost.author.profilePicture ||
-                                                                    "/default-avatar.png"
-                                                                }
-                                                                alt={forumData.lastPost.author.username}
-                                                                loading="lazy"
-                                                            />
-                                                        </Link>
+                                                <div className="min-w-90 flex flex-col md:flex-row justify-start md:items-center">
+                                                    <div className="flex mb-3 md:mb-0 md:flex-col justify-start md:justify-end items-center me-5">
 
-                                                        <div className="w-60 min-w-0">
+
+                                                        <span>
+                                                            Topics<span className="me-2">:</span>
+                                                        </span>
+                                                        <span>{formatNumber(messagesCount)}</span>
+                                                    </div>
+
+                                                    {forumData?.lastPost ? (
+                                                        <div className="flex items-center text-sm mb-2 md:mb-0">
                                                             <Link
-                                                                to={`/topics/${forumData.lastPost.topic.id}`}
-                                                                className="block truncate text-neutral-200 hover:text-blue-400"
-                                                                title={forumData.lastPost.topic.title}
+                                                                to={`/members/${forumData.lastPost.author.username}`}
+                                                                className="h-10 w-10 me-2 shrink-0"
                                                             >
-                                                                {forumData.lastPost.topic.title}
+                                                                <img
+                                                                    className="w-full h-full object-cover rounded-full opacity-90"
+                                                                    src={
+                                                                        forumData.lastPost.author.profilePicture ||
+                                                                        "/default-avatar.png"
+                                                                    }
+                                                                    alt={forumData.lastPost.author.username}
+                                                                    loading="lazy"
+                                                                />
                                                             </Link>
 
-                                                            <p className="text-xs text-neutral-500">
-                                                                {new Date(forumData.lastPost.createdAt).toLocaleString()} by{" "}
+                                                            <div className="w-60 min-w-0">
                                                                 <Link
-                                                                    to={`/members/${forumData.lastPost.author.username}`}
-                                                                    className={`${roleColors[forumData.lastPost.author.role] || "text-neutral-300"} font-bold`}
+                                                                    to={`/topics/${forumData.lastPost.topic.id}`}
+                                                                    className="block truncate text-neutral-200 hover:text-blue-400"
+                                                                    title={forumData.lastPost.topic.title}
                                                                 >
-                                                                    {forumData.lastPost.author.username}
+                                                                    {forumData.lastPost.topic.title}
                                                                 </Link>
-                                                            </p>
+
+                                                                <p className="text-xs text-neutral-500">
+                                                                    {new Date(forumData.lastPost.createdAt).toLocaleString()} by{" "}
+                                                                    <Link
+                                                                        to={`/members/${forumData.lastPost.author.username}`}
+                                                                        className={`${roleColors[forumData.lastPost.author.role] || "text-neutral-300"} font-bold`}
+                                                                    >
+                                                                        {forumData.lastPost.author.username}
+                                                                    </Link>
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-sm text-neutral-500">No posts yet</div>
-                                                )}
+                                                    ) : (
+                                                        <div className="text-sm text-neutral-500">No posts yet</div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div className="w-full lg:w-80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
-                <SidebarBox title="Recent topics">
-                    {data.topics.map((t) => (
-                        <UserItem
-                            key={t.id}
-                            image={t.author.profilePicture}
-                            username={t.author.username}
-                            role={t.author.role}
-                            title={t.title}
-                            date={t.createdAt}
-                            link={`/topics/${t.id}`}
-                        />
-                    ))}
-                </SidebarBox>
-
-                <SidebarBox title="Recent posts">
-                    {data.posts.map((post) => (
-                        <UserItem
-                            key={post.id}
-                            image={post.author.profilePicture}
-                            username={post.author.username}
-                            role={post.author.role}
-                            title={post.topic.title}
-                            date={post.createdAt}
-                            link={`/topics/${post.topic.id}#${post.id}`}
-                            prefix="topic:"
-                        />
-                    ))}
-                </SidebarBox>
-
-                <SidebarBox title="Top posters">
-                    {data.topPosters.map((tp) => {
-                        if (!tp.user) return null;
-
-                        return (
-                            <div key={tp.id} className="flex py-2 items-center gap-5">
-                                <Link to={`/members/${tp.user.username}`} className="h-10 w-10 me-3 shrink-0">
-                                    <img
-                                        className="w-full h-full object-cover rounded-full opacity-90"
-                                        src={tp.user.profilePicture || "/default-avatar.png"}
-                                        alt={tp.user.username}
-                                        loading="lazy"
-                                    />
-                                </Link>
-
-                                <Link
-                                    to={`/members/${tp.user.username}`}
-                                    className={`${roleColors[tp.user.role] || "text-neutral-300"} font-bold text-sm`}
-                                >
-                                    {tp.user.username}
-                                </Link>
+                                    );
+                                })}
                             </div>
-                        );
-                    })}
-                </SidebarBox>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="w-full lg:w-80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
+                    <SidebarBox title="Recent topics">
+                        {data.topics.map((t) => (
+                            <UserItem
+                                key={t.id}
+                                image={t.author.profilePicture}
+                                username={t.author.username}
+                                role={t.author.role}
+                                title={t.title}
+                                date={t.createdAt}
+                                link={`/topics/${t.id}`}
+                            />
+                        ))}
+                    </SidebarBox>
+
+                    <SidebarBox title="Recent posts">
+                        {data.posts.map((post) => (
+                            <UserItem
+                                key={post.id}
+                                image={post.author.profilePicture}
+                                username={post.author.username}
+                                role={post.author.role}
+                                title={post.topic.title}
+                                date={post.createdAt}
+                                link={`/topics/${post.topic.id}#${post.id}`}
+                                prefix="topic:"
+                            />
+                        ))}
+                    </SidebarBox>
+
+                    <SidebarBox title="Top posters">
+                        {data.topPosters.map((tp) => {
+                            if (!tp.user) return null;
+
+                            return (
+                                <div key={tp.id} className="flex py-2 items-center gap-5">
+                                    <Link to={`/members/${tp.user.username}`} className="h-10 w-10 me-3 shrink-0">
+                                        <img
+                                            className="w-full h-full object-cover rounded-full opacity-90"
+                                            src={tp.user.profilePicture || "/default-avatar.png"}
+                                            alt={tp.user.username}
+                                            loading="lazy"
+                                        />
+                                    </Link>
+
+                                    <Link
+                                        to={`/members/${tp.user.username}`}
+                                        className={`${roleColors[tp.user.role] || "text-neutral-300"} font-bold text-sm`}
+                                    >
+                                        {tp.user.username}
+                                    </Link>
+                                </div>
+                            );
+                        })}
+                    </SidebarBox>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

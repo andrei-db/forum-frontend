@@ -6,7 +6,7 @@ import { EditIcon, Trash2Icon } from "lucide-react";
 import { roleColors } from "../utils/roleColors";
 import { formatDate } from "../utils/formatDate";
 import { renderPost } from "../utils/renderPost.jsx";
-
+import Breadcrumbs from "../components/Breadcrumbs.jsx";
 export default function TopicPage() {
   const { id } = useParams();
   const [topic, setTopic] = useState(null);
@@ -18,8 +18,8 @@ export default function TopicPage() {
   const [editContent, setEditContent] = useState("");
   const { user } = useAuth();
   function isFirstPost(post) {
-  return topic?.firstPostId === post.id;
-}
+    return topic?.firstPostId === post.id;
+  }
   async function handleEdit(e, postId) {
     e.preventDefault();
     try {
@@ -97,7 +97,23 @@ export default function TopicPage() {
 
   return (
     <div className="mt-5 space-y-6 text-neutral-300">
+      <Breadcrumbs
+          items={[
+            {
+              label: topic.forum.category.name,
+              to: `/categories/${topic.forum.category.id}`,
+            },
+            {
+              label: topic.forum.name,
+              to: `/forums/${topic.forum.id}`,
+            },
+            {
+              label: topic.title,
+            },
+          ]}
+        />
       <div className="p-4 bg-neutral-900 rounded shadow flex justify-between ">
+        
         <div className="">
           <h2 className="text-2xl font-bold">{topic.title}</h2>
           <p className="text-sm">

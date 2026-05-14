@@ -37,7 +37,7 @@ export default function Navbar() {
           >
             <X size={24} />
           </button>
-          {user ? (
+          {loading ? null : user ? (
             <>
               <Link
                 to={`/members/${user.username}`}
@@ -84,19 +84,21 @@ export default function Navbar() {
          items-center gap-1 hover:bg-neutral-800 p-2 rounded">
           Forum MVP
         </Link>
-       
+
 
       </div>
 
 
       <div className="hidden sm:flex items-center gap-4">
-        {user ? (
+        {loading ? (
+          <div className="w-32 h-8 bg-neutral-800 rounded animate-pulse" />
+        ) : user ? (
           <div className="relative cursor-pointer hover:bg-neutral-700 rounded-sm" ref={menuRef}>
             <button
               onClick={() => setOpen(!open)}
               className="flex p-2 items-center gap-1 hover:text-white"
             >
-              
+
               <span className={`${roleColors[user.role]} font-bold`}>
                 {user.username}
               </span>
@@ -115,10 +117,10 @@ export default function Navbar() {
                 />
               </svg>
             </button>
-       
+
             {open && (
               <div className="absolute right-0 w-50 bg-neutral-900 rounded-md shadow-lg z-50">
-                
+
                 {user.role === "admin" ? (
                   <Link
                     to="/admin/dashboard"
@@ -159,7 +161,7 @@ export default function Navbar() {
                 >
                   Logout
                 </button>
-                </div>
+              </div>
             )}
           </div>
         ) : (
