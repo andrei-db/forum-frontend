@@ -11,7 +11,7 @@ import {
 const items = [
   { label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Forums", to: "/admin/forums", icon: MessageCircle },
-  { label: "Users", to: "/admin/users", icon: Users },
+  { label: "Members", to: "/admin/members", icon: Users },
   { label: "Settings", to: "/admin/settings", icon: Settings },
 ];
 

@@ -16,11 +16,12 @@ import AdminLayout from "./admin/layouts/AdminLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import AdminDashboard from "./admin/pages/AdminDashboard";
 import AdminForums from "./admin/pages/AdminForums";
-import AdminUsers from "./admin/pages/AdminUsers";
+import AdminMembers from "./admin/pages/AdminMembers";
 import AdminSettings from "./admin/pages/AdminSettings";
 import AdminAddForum from "./admin/pages/AdminAddForum";
 import AdminEditForum from "./admin/pages/AdminEditForum";
 import AdminEditCategory from "./admin/pages/AdminEditCategory";
+import AdminAddMember from "./admin/pages/AdminAddMember";
 export default function App() {
   return (
     <AuthProvider>
@@ -65,11 +66,12 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="forums" element={<AdminForums />} />
-            <Route path="users" element={<AdminUsers />} />
+            <Route path="members" element={<AdminMembers />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="forums/add" element={<AdminAddForum />} />
             <Route path="forums/:id/edit" element={<AdminEditForum />} />
             <Route path="categories/:id/edit" element={<AdminEditCategory />} />
+            <Route path="members/add" element={<AdminAddMember />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
