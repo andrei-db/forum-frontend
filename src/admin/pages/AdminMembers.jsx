@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { api } from "../../api/client";
-import { formatDate } from "../../utils/formatDate";
 import { NavLink, useSearchParams } from "react-router-dom";
 export default function AdminMembers() {
     const [members, setMembers] = useState([]);
@@ -21,6 +20,8 @@ export default function AdminMembers() {
 
     const [sortOpen, setSortOpen] = useState(false);
     const [orderOpen, setOrderOpen] = useState(false);
+
+    const [search, setSearch] = useState("");
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -34,7 +35,20 @@ export default function AdminMembers() {
         { label: "Group", value: "role" },
     ];
 
-    const sortedMembers = [...members].sort((a, b) => {
+    const filteredMembers = members.filter((member) => {
+        const query = search.toLowerCase().trim();
+
+        if (!query) return true;
+
+        return (
+            member.username.toLowerCase().includes(query) ||
+            member.email.toLowerCase().includes(query) ||
+            member.role.toLowerCase().includes(query) ||
+            member.createdAt.toLowerCase().includes(query)
+        );
+    });
+
+    const sortedMembers = [...filteredMembers].sort((a, b) => {
         let aValue;
         let bValue;
 
@@ -204,6 +218,8 @@ export default function AdminMembers() {
                     <div className="flex items-center bg-[#2a2f38] rounded-md px-3 py-2 w-80">
                         <Search size={18} className="text-neutral-500 mr-3" />
                         <input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                             className="bg-transparent outline-none flex-1 text-sm font-bold"
                             placeholder="SEARCH"
                         />
@@ -221,50 +237,55 @@ export default function AdminMembers() {
                     <div className="px-4 py-4">GROUP</div>
                 </div>
 
-                {sortedMembers.map((member) => (
-                    <div
-                        key={member.id}
-                        className="grid grid-cols-[80px_1.5fr_2fr_1fr_1.5fr_0.5fr] 
-                        items-center bg-neutral-900 border-t border-neutral-800 hover:bg-neutral-800"
-                    >
-                        <div className="px-5 py-5">
-                            {member.profilePicture ? (
-                                <img
-                                    src={member.profilePicture}
-                                    className="w-11 h-11 rounded-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-11 h-11 rounded-full bg-neutral-700 text-white flex items-center justify-center text-2xl">
-                                    {member.username[0].toUpperCase()}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="px-4 py-5 font-bold text-neutral-100">
-                            {member.username}
-                        </div>
-
-                        <div className="px-4 py-5 text-neutral-300">
-                            {member.email}
-                        </div>
-
-                        <div className="px-4 py-5">
-                            {formatDate(member.createdAt)}
-                        </div>
-
-                        <div className="px-4 py-5">
-                            {member.role}
-                        </div>
-                        <div className="px-4 py-5">
-                            <button
-                                onClick={() => handleDeleteMember(member.id)}
-                                className="text-red-400 hover:text-red-300 font-bold"
-                            >
-                                <XCircle size={22} />
-                            </button>
-                        </div>
+                {sortedMembers.length === 0 ? (
+                    <div className="px-6 py-8 text-neutral-500 text-center bg-neutral-900 border-t border-neutral-800">
+                        No members found.
                     </div>
-                ))}
+                ) : (
+                    sortedMembers.map((member) => (
+                        <div
+                            key={member.id}
+                            className="grid grid-cols-[80px_1.5fr_2fr_1fr_1.5fr_0.5fr] 
+                        items-center bg-neutral-900 border-t border-neutral-800 hover:bg-neutral-800"
+                        >
+                            <div className="px-5 py-5">
+                                {member.profilePicture ? (
+                                    <img
+                                        src={member.profilePicture}
+                                        className="w-11 h-11 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-11 h-11 rounded-full bg-neutral-700 text-white flex items-center justify-center text-2xl">
+                                        {member.username[0].toUpperCase()}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="px-4 py-5 font-bold text-neutral-100">
+                                {member.username}
+                            </div>
+
+                            <div className="px-4 py-5 text-neutral-300">
+                                {member.email}
+                            </div>
+
+                            <div className="px-4 py-5">
+                                {member.createdAt}
+                            </div>
+
+                            <div className="px-4 py-5">
+                                {member.role}
+                            </div>
+                            <div className="px-4 py-5">
+                                <button
+                                    onClick={() => handleDeleteMember(member.id)}
+                                    className="text-red-400 hover:text-red-300 font-bold"
+                                >
+                                    <XCircle size={22} />
+                                </button>
+                            </div>
+                        </div>
+                    )))}
             </div>
         </div>
     );
