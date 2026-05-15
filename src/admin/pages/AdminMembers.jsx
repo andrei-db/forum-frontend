@@ -8,15 +8,62 @@ import {
     ChevronDown,
     SearchIcon,
     XCircle,
+    Check
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { api } from "../../api/client";
 import { formatDate } from "../../utils/formatDate";
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 export default function AdminMembers() {
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    const [sortOpen, setSortOpen] = useState(false);
+    const [orderOpen, setOrderOpen] = useState(false);
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const sortBy = searchParams.get("sort") || "joined";
+    const orderBy = searchParams.get("order") || "desc";
+
+    const sortOptions = [
+        { label: "Display Name", value: "username" },
+        { label: "Email Address", value: "email" },
+        { label: "Joined", value: "joined" },
+        { label: "Group", value: "role" },
+    ];
+
+    const sortedMembers = [...members].sort((a, b) => {
+        let aValue;
+        let bValue;
+
+        switch (sortBy) {
+            case "username":
+                aValue = a.username.toLowerCase();
+                bValue = b.username.toLowerCase();
+                break;
+
+            case "email":
+                aValue = a.email.toLowerCase();
+                bValue = b.email.toLowerCase();
+                break;
+
+            case "role":
+                aValue = a.role.toLowerCase();
+                bValue = b.role.toLowerCase();
+                break;
+
+            default:
+                aValue = new Date(a.createdAt);
+                bValue = new Date(b.createdAt);
+        }
+
+        if (aValue < bValue) return orderBy === "asc" ? -1 : 1;
+        if (aValue > bValue) return orderBy === "asc" ? 1 : -1;
+
+        return 0;
+    });
 
     useEffect(() => {
         api("/members")
@@ -63,13 +110,96 @@ export default function AdminMembers() {
                         FILTER <ChevronDown size={14} />
                     </button>
 
-                    <button className="flex items-center gap-1 text-sm font-bold text-neutral-400">
-                        SORT BY <ChevronDown size={14} />
-                    </button>
 
-                    <button className="flex items-center gap-1 text-sm font-bold text-neutral-400">
-                        ORDER BY <ChevronDown size={14} />
-                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setSortOpen(!sortOpen)}
+                            className={`
+      flex items-center gap-2 px-5 py-4 rounded-lg text-sm font-bold transition
+      ${sortOpen
+                                    ? "bg-neutral-700 text-white ring-4 ring-slate-800"
+                                    : "text-neutral-400 hover:text-white"
+                                }
+    `}
+                        >
+                            SORT BY
+                            <ChevronDown size={16} />
+                        </button>
+
+                        {sortOpen && (
+                            <div className="absolute left-1/2 -translate-x-1/2 top-[62px] w-[250px] bg-neutral-800 border border-[#171b22] rounded-xl shadow-2xl z-[999]">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-neutral-800 border-l border-t border-[#171b22] rotate-45" />
+
+                                <div className="relative z-10 py-4">
+                                    {sortOptions.map((item) => (
+                                        <button
+                                            key={item}
+                                            onClick={() => {
+                                                setSearchParams({
+                                                    sort: item.value,
+                                                    order: orderBy,
+                                                });
+                                                setSortOpen(false);
+                                            }}
+                                            className="w-full flex items-center gap-3 px-8 py-4 hover:bg-neutral-700 transition text-left"
+                                        >
+                                            <div className="w-7 flex justify-center">
+                                                {sortBy === item.value ? (
+                                                    <Check size={26} className="text-neutral-300" />
+                                                ) : (
+                                                    <div className="w-6 h-6 rounded-full border-2 border-neutral-600" />
+                                                )}
+                                            </div>
+
+                                            <span className="text-[16px] leading-none font-semibold text-neutral-300">
+                                                {item.label}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className="relative z-50">
+                        <button
+                            onClick={() => setOrderOpen(!orderOpen)}
+                            className="flex items-center gap-1 text-sm font-bold text-neutral-400"
+                        >
+                            ORDER BY <ChevronDown size={14} />
+                        </button>
+
+                        {orderOpen && (
+                            <div className="absolute right-0 top-10 w-44 bg-[#2b3038] border border-neutral-700 rounded-lg shadow-xl z-[999]">
+                                <button
+                                    onClick={() => {
+                                        setSearchParams({
+                                            sort: sortBy,
+                                            order: "asc",
+                                        });
+
+                                        setOrderOpen(false);
+                                    }}
+                                    className="block w-full text-left px-4 py-3 hover:bg-neutral-700"
+                                >
+                                    Ascending
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setSearchParams({
+                                            sort: sortBy,
+                                            order: "desc",
+                                        });
+
+                                        setOrderOpen(false);
+                                    }}
+                                    className="block w-full text-left px-4 py-3 hover:bg-neutral-700"
+                                >
+                                    Descending
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="flex items-center bg-[#2a2f38] rounded-md px-3 py-2 w-80">
                         <Search size={18} className="text-neutral-500 mr-3" />
@@ -91,7 +221,7 @@ export default function AdminMembers() {
                     <div className="px-4 py-4">GROUP</div>
                 </div>
 
-                {members.map((member) => (
+                {sortedMembers.map((member) => (
                     <div
                         key={member.id}
                         className="grid grid-cols-[80px_1.5fr_2fr_1fr_1.5fr_0.5fr] 
@@ -130,7 +260,7 @@ export default function AdminMembers() {
                                 onClick={() => handleDeleteMember(member.id)}
                                 className="text-red-400 hover:text-red-300 font-bold"
                             >
-                                <XCircle  size={22}/>
+                                <XCircle size={22} />
                             </button>
                         </div>
                     </div>
