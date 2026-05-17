@@ -250,10 +250,10 @@ export default function AdminGroups() {
                                     <Pencil size={20} /> 
                                 </NavLink>
                                 
-                                <NavLink
-                        to={`/admin/groups/permissions/${group.id}`}
-                                    className="p-2 cursor-pointer rounded hover:bg-neutral-700 font-bold"
+                                <NavLink key={group.id} to={`/admin/groups/${group.id}/permissions`}
+                                className="p-2 cursor-pointer rounded hover:bg-neutral-700 font-bold"
                                 >
+                                
                                     <LockIcon size={20} />
                                 </NavLink>
                                 <button

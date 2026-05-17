@@ -26,7 +26,7 @@ import AdminMemberProfile from "./admin/pages/AdminMemberProfile";
 import AdminGroups from "./admin/pages/AdminGroups";
 import AdminAddGroup from "./admin/pages/AdminAddGroup";
 import AdminEditGroup from "./admin/pages/AdminEditGroup";
-import AdminGroupsPermissions from "./admin/pages/AdminGroupsPermissions";
+import AdminGroupPermissions from "./admin/pages/AdminGroupPermissions";
 export default function App() {
   return (
     <AuthProvider>
@@ -81,7 +81,7 @@ export default function App() {
             <Route path="groups" element={<AdminGroups />} />
             <Route path="groups/add" element={<AdminAddGroup />} />
             <Route path="groups/:id" element={<AdminEditGroup />} />
-            <Route path="groups/permissions/:id" element={<AdminGroupsPermissions />} />
+            <Route path="groups/:id/permissions" element={<AdminGroupPermissions />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
