@@ -3,7 +3,6 @@ import { api } from "../api/client";
 import { Link } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { formatNumber } from "../utils/formatNumber";
-import { roleColors } from "../utils/roleColors";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Search from "../components/Search";
 function HomeSkeleton() {
@@ -33,7 +32,7 @@ export default function Home() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-
+    
     useEffect(() => {
         let cancelled = false;
 
@@ -81,13 +80,14 @@ export default function Home() {
 
     return (
         <>
-    
-                <Breadcrumbs items={[]} />
-           
+
+            <Breadcrumbs items={[]} />
+
 
             <div className="mt-5 text-neutral-300 gap-5 flex flex-col lg:flex-row items-start">
 
                 <div className="w-full md:flex-1">
+                    {console.log(data)}
                     {data.categories.map((cat) => (
                         <div key={cat.id} className="rounded-md shadow p-4 bg-neutral-900 mb-5">
                             <h3 className="text-xl font-semibold mb-2">{cat.name}</h3>
@@ -167,7 +167,7 @@ export default function Home() {
                                                                     {new Date(forumData.lastPost.createdAt).toLocaleString()} by{" "}
                                                                     <Link
                                                                         to={`/members/${forumData.lastPost.author.username}`}
-                                                                        className={`${roleColors[forumData.lastPost.author.role] || "text-neutral-300"} font-bold`}
+                                                                        className={`${forumData.lastPost?.author?.group?.color} font-bold`}
                                                                     >
                                                                         {forumData.lastPost.author.username}
                                                                     </Link>
@@ -194,7 +194,7 @@ export default function Home() {
                                 key={t.id}
                                 image={t.author.profilePicture}
                                 username={t.author.username}
-                                role={t.author.role}
+                                group={t.author.group.color}
                                 title={t.title}
                                 date={t.createdAt}
                                 link={`/topics/${t.id}`}
@@ -208,7 +208,7 @@ export default function Home() {
                                 key={post.id}
                                 image={post.author.profilePicture}
                                 username={post.author.username}
-                                role={post.author.role}
+                                group={post.author.group?.color}
                                 title={post.topic.title}
                                 date={post.createdAt}
                                 link={`/topics/${post.topic.id}#${post.id}`}
@@ -234,7 +234,7 @@ export default function Home() {
 
                                     <Link
                                         to={`/members/${tp.user.username}`}
-                                        className={`${roleColors[tp.user.role] || "text-neutral-300"} font-bold text-sm`}
+                                        className={`${tp.user.group?.color || "text-neutral-300"} font-bold text-sm`}
                                     >
                                         {tp.user.username}
                                     </Link>
@@ -257,7 +257,7 @@ function SidebarBox({ title, children }) {
     );
 }
 
-function UserItem({ image, username, role, title, date, link, prefix }) {
+function UserItem({ image, username, group, title, date, link, prefix }) {
     return (
         <div className="flex items-start gap-3 py-3">
             <Link to={`/members/${username}`} className="flex-shrink-0 w-10 h-10">
@@ -284,7 +284,7 @@ function UserItem({ image, username, role, title, date, link, prefix }) {
                     <span className="text-neutral-400">by</span>{" "}
                     <Link
                         to={`/members/${username}`}
-                        className={`${roleColors[role] || "text-neutral-300"} font-bold hover:underline`}
+                        className={`${group || "text-neutral-300"} font-bold hover:underline`}
                     >
                         {username}
                     </Link>

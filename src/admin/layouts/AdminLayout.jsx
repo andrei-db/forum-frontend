@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 
 
 
@@ -24,35 +24,14 @@ import {
   Code,
 } from "lucide-react";
 import AdminSidebar from "../components/AdminSidebar";
+import AdminNavbar from "../components/AdminNavbar";
 export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-200 flex">
       <AdminSidebar />
-      
+
       <main className="flex-1">
-        <header className="h-16 bg-neutral-900 border-b border-[#2a3038] flex items-center px-4 gap-4">
-          <div className="relative flex-1 max-w-5xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
-            <input
-              className="w-full h-12 bg-neutral-800 rounded-md pl-11 pr-4 outline-none text-sm text-neutral-200 placeholder:text-neutral-500 focus:ring-2 focus:ring-blue-600"
-              placeholder="Search for settings, members, etc."
-            />
-          </div>
-
-          <Home size={17} />
-          <LinkIcon size={17} />
-
-          <button className="relative text-neutral-300 hover:text-white">
-            <Bell size={21} />
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-              3
-            </span>
-          </button>
-
-          <div className="w-10 h-10 rounded-full bg-teal-400 text-white flex items-center justify-center font-bold">
-            A
-          </div>
-        </header>
+        <AdminNavbar />
         <Outlet />
       </main>
     </div>

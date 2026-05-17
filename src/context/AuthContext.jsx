@@ -5,12 +5,14 @@ export function AuthProvider({ children }) {
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    
+
     const refreshUser = async () => {
         try {
             const me = await api("/me");
+
             setUser(me);
-        } catch(err) {
+            console.log("hi:" + user);
+        } catch (err) {
             setUser(null);
             if (err?.message?.includes("Unauthorized") || err?.message?.includes("401")) {
                 logout();
@@ -30,10 +32,11 @@ export function AuthProvider({ children }) {
             setLoading(false);
         }
     }, []);
-    
+
     const login = (token, user) => {
         localStorage.setItem("token", token);
         setUser(user);
+        setLoading(false);
     };
 
     const logout = () => {

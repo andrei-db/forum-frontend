@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { roleColors } from "../utils/roleColors";
 import { useState, useEffect, useRef } from "react";
 import { CrownIcon, MenuIcon, SearchIcon, UsersIcon, X, MailIcon, BellIcon } from "lucide-react";
 export default function Navbar() {
@@ -8,6 +7,9 @@ export default function Navbar() {
   const { user, loading, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const userColor = user?.group?.color || "text-neutral-300";
+  const isStaff = user?.group?.isStaff;
   const menuRef = useRef();
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export default function Navbar() {
               <Link
                 to={`/members/${user.username}`}
                 onClick={() => setMobileOpen(false)}
-                className={`${roleColors[user.role]} font-bold`}
+                className={`${user?.group?.color} font-bold`}
               >
                 {user.username}
               </Link>
@@ -52,8 +54,8 @@ export default function Navbar() {
               <Link to="/account/security" onClick={() => setMobileOpen(false)}>
                 Security
               </Link>
-              {user.role === "admin" && (
-                <Link to="/admin/dashboard" onClick={() => setMobileOpen(false)}>
+              {isStaff && (
+                <Link to="/admin/dashboard" target="_blank" onClick={() => setMobileOpen(false)}>
                   Admin Panel
                 </Link>
               )}
@@ -99,7 +101,7 @@ export default function Navbar() {
               className="flex p-2 items-center gap-1 hover:text-white"
             >
 
-              <span className={`${roleColors[user.role]} font-bold`}>
+              <span className={`${userColor} font-bold`}>
                 {user.username}
               </span>
               <svg
@@ -121,10 +123,11 @@ export default function Navbar() {
             {open && (
               <div className="absolute right-0 w-50 bg-neutral-900 rounded-md shadow-lg z-50">
 
-                {user.role === "admin" ? (
+                {isStaff ? (
                   <Link
                     to="/admin/dashboard"
                     className="block px-4 py-2 text-sm font-bold bg-black hover:bg-red-500"
+                    target="_blank"
                     onClick={() => setOpen(false)}
                   >
                     Admin Panel

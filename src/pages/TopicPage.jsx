@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { EditIcon, Trash2Icon } from "lucide-react";
-import { roleColors } from "../utils/roleColors";
 import { formatDate } from "../utils/formatDate";
 import { renderPost } from "../utils/renderPost.jsx";
 import Breadcrumbs from "../components/Breadcrumbs.jsx";
@@ -117,11 +116,11 @@ export default function TopicPage() {
         <div className="">
           <h2 className="text-2xl font-bold">{topic.title}</h2>
           <p className="text-sm">
-            <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> {" "}
+            <span className={`${topic.author.group.color} font-bold`}>{topic.author.username}</span> {" "}
             {new Date(topic.createdAt).toLocaleString()}
           </p>
         </div>
-        {user?.role === "admin" && (
+        {user?.group.isStaff && (
           <div className="flex items-center gap-2">
             <button
               onClick={async () => {
@@ -162,8 +161,8 @@ export default function TopicPage() {
 
                 <div className="py-2">
 
-                  <div className={`${roleColors[post.author.role]}  text-center text-lg`}>{post.author.username}</div>
-                  <div className="text-center">{post.author.role}</div>
+                  <div className={`${post.author.group.color}  text-center text-lg`}>{post.author.username}</div>
+                  <div className="text-center">{post.author.group.color}</div>
 
                   <div className="mt-5">
                     <div className="flex justify-between px-3">
@@ -212,7 +211,7 @@ export default function TopicPage() {
                     </div>
                   )}
                 </div>
-                {user && (user.id === post.author.id || user.role === "admin") && (
+                {user && (user.id === post.author.id || user.group.isStaff) && (
                   <div className="flex justify-end gap-2 mt-2 text-sm">
                     <button
                       className="flex justify-center items-center gap-1 rounded-xs bg-blue-600 text-white p-1"

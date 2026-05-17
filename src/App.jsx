@@ -22,6 +22,11 @@ import AdminAddForum from "./admin/pages/AdminAddForum";
 import AdminEditForum from "./admin/pages/AdminEditForum";
 import AdminEditCategory from "./admin/pages/AdminEditCategory";
 import AdminAddMember from "./admin/pages/AdminAddMember";
+import AdminMemberProfile from "./admin/pages/AdminMemberProfile";
+import AdminGroups from "./admin/pages/AdminGroups";
+import AdminAddGroup from "./admin/pages/AdminAddGroup";
+import AdminEditGroup from "./admin/pages/AdminEditGroup";
+import AdminGroupsPermissions from "./admin/pages/AdminGroupsPermissions";
 export default function App() {
   return (
     <AuthProvider>
@@ -62,7 +67,7 @@ export default function App() {
             <Route path="/members/:username" element={<Profile />} />
 
           </Route>
-          <Route path="/admin" element={<Protected role="admin"><AdminLayout /></Protected>}>
+          <Route path="/admin" element={<Protected staffOnly><AdminLayout /></Protected>}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="forums" element={<AdminForums />} />
@@ -72,6 +77,11 @@ export default function App() {
             <Route path="forums/:id/edit" element={<AdminEditForum />} />
             <Route path="categories/:id/edit" element={<AdminEditCategory />} />
             <Route path="members/add" element={<AdminAddMember />} />
+            <Route path="members/:id" element={<AdminMemberProfile />} />
+            <Route path="groups" element={<AdminGroups />} />
+            <Route path="groups/add" element={<AdminAddGroup />} />
+            <Route path="groups/:id" element={<AdminEditGroup />} />
+            <Route path="groups/permissions/:id" element={<AdminGroupsPermissions />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

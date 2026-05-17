@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { LockIcon, MessageCircle, PinIcon } from "lucide-react";
-import { roleColors } from "../utils/roleColors";
 import { useAuth } from "../context/AuthContext";
 import Breadcrumbs from "../components/Breadcrumbs";
 export default function ForumPage() {
@@ -91,7 +90,7 @@ export default function ForumPage() {
                                             {topic.title}
                                         </Link>
                                         <p className="text-sm text-neutral-500">
-                                            created by <span className={`${roleColors[topic.author.role]} font-bold`}>{topic.author.username}</span> at{" "}
+                                            created by <span className={`${topic.author.group.color} font-bold`}>{topic.author.username}</span> at{" "}
                                             {new Date(topic.createdAt).toLocaleString()}
                                         </p>
                                     </div>
@@ -119,7 +118,7 @@ export default function ForumPage() {
                                                     <p className="text-xs">
                                                         {new Date(topic.lastReply.createdAt).toLocaleString()}
                                                     </p>
-                                                    <p className={`${roleColors[topic.lastReply.author.role]} text-sm font-medium`}>
+                                                    <p className={`${topic.lastReply.author.group.color} text-sm font-medium`}>
                                                         {topic.lastReply.author.username}
                                                     </p>
 

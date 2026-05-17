@@ -6,18 +6,20 @@ import {
   Folder,
   Settings,
   Brush,
+  ShieldCheck,
 } from "lucide-react";
 
 const items = [
   { label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Forums", to: "/admin/forums", icon: MessageCircle },
+  { label: "Forums & Categories", to: "/admin/forums", icon: MessageCircle },
   { label: "Members", to: "/admin/members", icon: Users },
+  { label: "Groups", to: "/admin/groups", icon: ShieldCheck },
   { label: "Settings", to: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminSidebar() {
   return (
-    <aside className="h-screen w-64 bg-neutral-900 border-r border-neutral-800 text-neutral-300">
+    <aside className="sticky top-0 h-screen w-64 bg-neutral-900 border-r border-neutral-800 text-neutral-300">
       <div className="h-16 flex items-center px-5 border-b border-neutral-800">
         <h1 className="text-lg font-bold text-white">Admin Panel</h1>
       </div>

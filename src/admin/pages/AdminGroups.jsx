@@ -8,13 +8,15 @@ import {
     ChevronDown,
     SearchIcon,
     XCircle,
-    Check
+    Check,
+    Pencil,
+    LockIcon
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { api } from "../../api/client";
 import { NavLink, useSearchParams } from "react-router-dom";
-export default function AdminMembers() {
-    const [members, setMembers] = useState([]);
+export default function AdminGroups() {
+    const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -25,52 +27,38 @@ export default function AdminMembers() {
 
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const sortBy = searchParams.get("sort") || "joined";
-    const orderBy = searchParams.get("order") || "desc";
+    const sortBy = searchParams.get("sort") || "name";
+    const orderBy = searchParams.get("order") || "asc";
 
     const sortOptions = [
-        { label: "Display Name", value: "username" },
-        { label: "Email Address", value: "email" },
-        { label: "Joined", value: "joined" },
-        { label: "Group", value: "role" },
+        { label: "Group Name", value: "name" },
+        { label: "Number of Members", value: "members" }
     ];
 
-    const filteredMembers = members.filter((member) => {
+    const filteredGroups = groups.filter((group) => {
         const query = search.toLowerCase().trim();
 
         if (!query) return true;
 
         return (
-            member.username.toLowerCase().includes(query) ||
-            member.email.toLowerCase().includes(query) ||
-            member.group.name.toLowerCase().includes(query) ||
-            member.createdAt.toLowerCase().includes(query)
+            group.name.toLowerCase().includes(query)
+
         );
     });
 
-    const sortedMembers = [...filteredMembers].sort((a, b) => {
+    const sortedGroups = [...filteredGroups].sort((a, b) => {
         let aValue;
         let bValue;
 
         switch (sortBy) {
-            case "username":
-                aValue = a.username.toLowerCase();
-                bValue = b.username.toLowerCase();
-                break;
-
-            case "email":
-                aValue = a.email.toLowerCase();
-                bValue = b.email.toLowerCase();
-                break;
-
-            case "role":
-                aValue = a.role.toLowerCase();
-                bValue = b.role.toLowerCase();
+            case "members":
+                aValue = a._count.users;
+                bValue = b._count.users;
                 break;
 
             default:
-                aValue = new Date(a.createdAt);
-                bValue = new Date(b.createdAt);
+                aValue = a.name.toLowerCase();
+                bValue = b.name.toLowerCase();
         }
 
         if (aValue < bValue) return orderBy === "asc" ? -1 : 1;
@@ -80,21 +68,21 @@ export default function AdminMembers() {
     });
 
     useEffect(() => {
-        api("/members")
-            .then(setMembers)
+        api("/groups")
+            .then(setGroups)
             .catch((err) => setError(err.message))
             .finally(() => setLoading(false));
     }, []);
 
-    async function handleDeleteMember(id) {
-        if (!confirm("Are you sure you want to delete this member?")) return;
+    async function handleDeleteGroup(id) {
+        if (!confirm("Are you sure you want to delete this group?")) return;
 
         try {
-            await api(`/members/${id}`, {
+            await api(`/groups/${id}`, {
                 method: "DELETE",
             });
 
-            setMembers((prev) => prev.filter((member) => member.id !== id));
+            setGroups((prev) => prev.filter((group) => group.id !== id));
         } catch (err) {
             alert(err.message);
         }
@@ -102,17 +90,17 @@ export default function AdminMembers() {
     return (
         <div className="min-h-screen bg-neutral-950 text-neutral-300 p-6">
             <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-neutral-200">Members</h1>
+                <h1 className="text-3xl font-bold text-neutral-200">Groups</h1>
 
                 <div className="flex gap-3">
 
 
                     <NavLink
-                        to="/admin/members/add"
+                        to="/admin/groups/add"
                         className="h-12 px-6 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center gap-2 transition"
                     >
                         <Plus size={20} />
-                        Create New Member
+                        Create New Group
                     </NavLink>
 
                 </div>
@@ -225,73 +213,63 @@ export default function AdminMembers() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-[80px_1.5fr_2fr_1fr_1.5fr_0.5fr] bg-neutral-800 text-sm font-bold text-neutral-400">
-                    <div></div>
-                    <div className="px-4 py-4">DISPLAY NAME</div>
-                    <div className="px-4 py-4">EMAIL ADDRESS</div>
-                    <div className="px-4 py-4 flex items-center justify-between">
-                        JOINED <ChevronDown size={14} />
-                    </div>
-                    <div className="px-4 py-4">GROUP</div>
+                <div className="grid grid-cols-[1.5fr_1.5fr_0.5fr] bg-neutral-800 text-sm font-bold text-neutral-400">
+                    <div className="px-4 py-4">GROUP NAME</div>
+                    <div className="px-4 py-4">MEMBERS</div>
                 </div>
 
-                {sortedMembers.length === 0 ? (
+                {sortedGroups.length === 0 ? (
                     <div className="px-6 py-8 text-neutral-500 text-center bg-neutral-900 border-t border-neutral-800">
-                        No members found.
+                        No groups found.
                     </div>
                 ) : (
-                    sortedMembers.map((member) => (
+                    sortedGroups.map((group) => (
                         <NavLink
-  to={`/admin/members/${member.id}`}>
-  
+                            to={`/admin/groups/${group.id}`}>
 
-                        <div
-                            key={member.id}
-                            className="grid grid-cols-[80px_1.5fr_2fr_1fr_1.5fr_0.5fr] 
+
+                            <div
+                                key={group.id}
+                                className="grid grid-cols-[1.5fr_1.5fr_0.5fr]
                         items-center bg-neutral-900 border-t border-neutral-800 hover:bg-neutral-800"
-                        >
-                            <div className="px-5 py-5">
-                                {member.profilePicture ? (
-                                    <img
-                                        src={member.profilePicture}
-                                        className="w-11 h-11 rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-11 h-11 rounded-full bg-neutral-700 text-white flex items-center justify-center text-2xl">
-                                        {member.username[0].toUpperCase()}
-                                    </div>
-                                )}
-                            </div>
+                            >
 
-                            <div className="px-4 py-5 font-bold text-neutral-100">
-                                {member.username}
-                            </div>
 
-                            <div className="px-4 py-5 text-neutral-300">
-                                {member.email}
-                            </div>
+                                <div className={`${group.color} px-4 py-5 font-bold `}>
+                                    {group.name}
+                                </div>
 
-                            <div className="px-4 py-5">
-                                {member.createdAt}
-                            </div>
-
-                            <div className="px-4 py-5">
-                                {member.group.name}
-                            </div>
-                            <div className="px-4 py-5">
+                                <div className="px-4 py-5 text-neutral-300">
+                                    {group._count.users}
+                                </div>
+                                <div className="px-4 py-5 flex gap-3">
+                                    <NavLink
+                        to={`/admin/groups/${group.id}`}
+                                    className="p-2 cursor-pointer rounded hover:bg-neutral-700 font-bold"
+                                >
+                                    <Pencil size={20} /> 
+                                </NavLink>
+                                
+                                <NavLink
+                        to={`/admin/groups/permissions/${group.id}`}
+                                    className="p-2 cursor-pointer rounded hover:bg-neutral-700 font-bold"
+                                >
+                                    <LockIcon size={20} />
+                                </NavLink>
                                 <button
                                     onClick={
                                         (e) =>{
                                             e.preventDefault();
-                                            handleDeleteMember(member.id);
+                                            handleDeleteGroup(group.id);
                                         }
                                     }
-                                    className="text-red-400 hover:text-red-300 font-bold"
+                                    className="p-2 cursor-pointer rounded hover:bg-neutral-700 font-bold"
                                 >
-                                    <XCircle size={22} />
+                                    <XCircle size={20} />
                                 </button>
                             </div>
-                        </div>
+
+                            </div>
                         </NavLink>
                     )))}
             </div>
