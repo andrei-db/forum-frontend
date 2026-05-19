@@ -48,3 +48,33 @@ src/
  ├── utils/
  └── assets/
  ```
+
+## Installation
+
+```bash
+npm install
+```
+
+## Environment Variables
+
+Create a `.env` file:
+
+```env
+VITE_API_BASE=
+```
+
+## Run Development Server
+
+```bash
+npm run dev
+```
+
+## Build Production Version
+
+```bash
+npm run build
+```
+
+## Notes
+
+This frontend communicates with a custom Express + Prisma backend API and includes a fully custom-built admin control panel and forum permission system.
