@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "../api/client";
 import { useNavigate, Link } from "react-router-dom";
 import { User, Mail, Lock } from "lucide-react";
-
+import { useSettings } from "../context/SettingsContext";
 export default function Register() {
   const [form, setForm] = useState({
     username: "",
@@ -14,6 +14,7 @@ export default function Register() {
   const [submitting, setSubmitting] = useState(false);
 
   const nav = useNavigate();
+  const { settings } = useSettings();
 
   const submit = async (e) => {
     e.preventDefault();
@@ -41,6 +42,18 @@ export default function Register() {
     }
   };
 
+  if (settings?.registrationEnabled === "false") {
+    return (
+      <div className="my-20 mx-auto max-w-lg bg-neutral-900 border border-neutral-800 rounded-xl p-8 text-center text-neutral-300">
+        <h1 className="text-2xl font-bold text-neutral-100 mb-3">
+          Registration is closed
+        </h1>
+        <p className="text-neutral-500">
+          New account registrations are currently disabled.
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="flex items-center justify-center text-neutral-200 my-20 px-4">
       <div className="w-full max-w-md bg-neutral-900 rounded-2xl shadow-md p-8 border border-neutral-800">

@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Guest, Protected } from "./components/Protected";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { SettingsProvider, useSettings } from "./context/SettingsContext";
 import TopicPage from "./pages/TopicPage";
 import ForumPage from "./pages/ForumPage";
 import NewTopicPage from "./pages/NewTopicPage";
@@ -27,65 +28,100 @@ import AdminGroups from "./admin/pages/AdminGroups";
 import AdminAddGroup from "./admin/pages/AdminAddGroup";
 import AdminEditGroup from "./admin/pages/AdminEditGroup";
 import AdminGroupPermissions from "./admin/pages/AdminGroupPermissions";
+import Maintenance from "./pages/Maintenance";
+function AppContent() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
+}
+function AppRoutes() {
+  const location = useLocation();
+
+  const { settings, loading: settingsLoading } = useSettings();
+  const { user, loading: authLoading } = useAuth();
+
+  if (settingsLoading || authLoading) return null;
+
+  const maintenanceEnabled =
+    settings?.maintenanceMode === "true";
+
+  const isStaff = user?.group?.isStaff;
+
+  const bypassMaintenance = location.pathname === "/login";
+
+  if (
+    maintenanceEnabled &&
+    !isStaff &&
+    !bypassMaintenance
+  ) {
+    return <Maintenance />;
+  }
+
+  return (
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/login"
+            element={
+              <Guest>
+                <Login />
+              </Guest>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Guest>
+                <Register />
+              </Guest>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <Protected>
+                <AccountLayout />
+              </Protected>
+            }
+          >
+            <Route path="account-details" element={<AccountDetails />} />
+            <Route path="security" element={<Security />} />
+          </Route>
+          <Route path="/forums/:id/new-topic" element={<NewTopicPage />} />
+          <Route path="/forums/:id" element={<ForumPage />} />
+          <Route path="/topics/:id" element={<TopicPage />} />
+          <Route path="/members/:username" element={<Profile />} />
+
+        </Route>
+        <Route path="/admin" element={<Protected staffOnly><AdminLayout /></Protected>}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="forums" element={<AdminForums />} />
+          <Route path="members" element={<AdminMembers />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="forums/add" element={<AdminAddForum />} />
+          <Route path="forums/:id/edit" element={<AdminEditForum />} />
+          <Route path="categories/:id/edit" element={<AdminEditCategory />} />
+          <Route path="members/add" element={<AdminAddMember />} />
+          <Route path="members/:id" element={<AdminMemberProfile />} />
+          <Route path="groups" element={<AdminGroups />} />
+          <Route path="groups/add" element={<AdminAddGroup />} />
+          <Route path="groups/:id" element={<AdminEditGroup />} />
+          <Route path="groups/:id/permissions" element={<AdminGroupPermissions />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+  );
+}
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/login"
-              element={
-                <Guest>
-                  <Login />
-                </Guest>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <Guest>
-                  <Register />
-                </Guest>
-              }
-            />
-            <Route
-              path="/account"
-              element={
-                <Protected>
-                  <AccountLayout />
-                </Protected>
-              }
-            >
-              <Route path="account-details" element={<AccountDetails />} />
-              <Route path="security" element={<Security />} />
-            </Route>
-            <Route path="/forums/:id/new-topic" element={<NewTopicPage />} />
-            <Route path="/forums/:id" element={<ForumPage />} />
-            <Route path="/topics/:id" element={<TopicPage />} />
-            <Route path="/members/:username" element={<Profile />} />
-
-          </Route>
-          <Route path="/admin" element={<Protected staffOnly><AdminLayout /></Protected>}>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="forums" element={<AdminForums />} />
-            <Route path="members" element={<AdminMembers />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="forums/add" element={<AdminAddForum />} />
-            <Route path="forums/:id/edit" element={<AdminEditForum />} />
-            <Route path="categories/:id/edit" element={<AdminEditCategory />} />
-            <Route path="members/add" element={<AdminAddMember />} />
-            <Route path="members/:id" element={<AdminMemberProfile />} />
-            <Route path="groups" element={<AdminGroups />} />
-            <Route path="groups/add" element={<AdminAddGroup />} />
-            <Route path="groups/:id" element={<AdminEditGroup />} />
-            <Route path="groups/:id/permissions" element={<AdminGroupPermissions />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </BrowserRouter>
+      <SettingsProvider>
+        <AppContent />
+      </SettingsProvider>
     </AuthProvider>
   );
 }

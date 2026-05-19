@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect, useRef } from "react";
 import { CrownIcon, MenuIcon, SearchIcon, UsersIcon, X, MailIcon, BellIcon } from "lucide-react";
+import { useSettings } from "../context/SettingsContext";
 export default function Navbar() {
   const nav = useNavigate();
   const { user, loading, logout } = useAuth();
@@ -11,6 +12,8 @@ export default function Navbar() {
   const userColor = user?.group?.color || "text-neutral-300";
   const isStaff = user?.group?.isStaff;
   const menuRef = useRef();
+
+  const { settings } =useSettings();
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -84,7 +87,7 @@ export default function Navbar() {
       <div className="flex gap-5 items-center">
         <Link to="/" className="text-2xl font-bold flex
          items-center gap-1 hover:bg-neutral-800 p-2 rounded">
-          Forum MVP
+          {settings?.forumName}
         </Link>
 
 

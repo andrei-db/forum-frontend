@@ -3,7 +3,7 @@ import { api } from "../api/client";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { User, Lock } from "lucide-react";
-
+import { useSettings } from "../context/SettingsContext";
 export default function Login() {
     const [form, setForm] = useState({ identifier: "", password: "" });
     const [error, setError] = useState("");
@@ -11,7 +11,7 @@ export default function Login() {
 
     const nav = useNavigate();
     const { login } = useAuth();
-
+    const { settings } = useSettings();
     const submit = async (e) => {
         e.preventDefault();
 
@@ -29,9 +29,13 @@ export default function Login() {
                 }),
             });
 
-            console.log("LOGIN RESPONSE:", data);
+            const maintenanceEnabled = settings?.maintenanceMode === "true";
+            const isStaff = data.user?.group?.isStaff;
 
-           
+            if (maintenanceEnabled && !isStaff) {
+                setError("The forum is currently under maintenance. Only staff can sign in.");
+                return;
+            }
 
             login(data.token, data.user);
             nav("/");
