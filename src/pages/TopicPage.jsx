@@ -97,22 +97,22 @@ export default function TopicPage() {
   return (
     <div className="mt-5 space-y-6 text-neutral-300">
       <Breadcrumbs
-          items={[
-            {
-              label: topic.forum.category.name,
-              to: `/categories/${topic.forum.category.id}`,
-            },
-            {
-              label: topic.forum.name,
-              to: `/forums/${topic.forum.id}`,
-            },
-            {
-              label: topic.title,
-            },
-          ]}
-        />
+        items={[
+          {
+            label: topic.forum.category.name,
+            to: `/categories/${topic.forum.category.id}`,
+          },
+          {
+            label: topic.forum.name,
+            to: `/forums/${topic.forum.id}`,
+          },
+          {
+            label: topic.title,
+          },
+        ]}
+      />
       <div className="p-4 bg-neutral-900 rounded shadow flex justify-between ">
-        
+
         <div className="">
           <h2 className="text-2xl font-bold">{topic.title}</h2>
           <p className="text-sm">
@@ -150,10 +150,14 @@ export default function TopicPage() {
       ) : null}
       <div className="space-y-4">
         {topic.posts?.length ? (
-          topic.posts.map(post => (
+          topic.posts.map((post, index) => (
             <div
               key={post.id}
-              className="p-4 gap-10 flex items-start bg-neutral-900 rounded shadow-sm"
+              className={`p-4 gap-10 flex items-start rounded border
+  ${isFirstPost(post)
+                  ? "bg-gradient-to-br from-neutral-900 to-neutral-950 border-red-950"
+                  : "bg-neutral-900 border-neutral-800"
+                }`}
             >
               <div className="text-sm  rounded-lg bg-neutral-800
             w-64">
@@ -182,6 +186,7 @@ export default function TopicPage() {
                   <p className="text-sm  text-neutral-300 mt-2">
                     {new Date(post.createdAt).toLocaleString()}
                   </p>
+                 
                   {editingPost === post.id ? (
                     <form onSubmit={(e) => handleEdit(e, post.id)} className="space-y-2">
                       <textarea
@@ -246,8 +251,18 @@ export default function TopicPage() {
         }
       </div>
 
-      {topic.closed ? (
-        <p className="bg-neutral-800 rounded p-4 text-red-500 mt-4">This topic is closed and cannot receive new replies.</p>
+      {!user ? (
+        <div className="text-sm text-red-500 bg-yellow-950/20 border border-yellow-900/40 rounded p-4">
+          You must be logged in to reply.
+        </div>
+      ) : topic.closed ? (
+        <div className="text-sm text-red-500 bg-yellow-950/20 border border-yellow-900/40 rounded p-4">
+          This topic is closed and cannot receive new replies.
+        </div>
+      ) : !topic.permissions?.canReply && !user?.group?.isStaff ? (
+        <div className="text-sm text-red-500 bg-yellow-950/20 border border-yellow-900/40 rounded p-4">
+          You do not have permission to reply in this forum.
+        </div>
       ) : (
         <form
           onSubmit={handleAddPost}
@@ -260,12 +275,13 @@ export default function TopicPage() {
             placeholder="Write a message..."
             rows="3"
           />
+
           <button
             type="submit"
             disabled={posting}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
           >
-            {posting ? "Proccessing..." : "Send message"}
+            {posting ? "Processing..." : "Send message"}
           </button>
         </form>
       )}

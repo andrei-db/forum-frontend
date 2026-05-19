@@ -3,10 +3,7 @@ import { roleColors } from "../utils/roleColors";
 import { useOnlineUsers } from "../hooks/useOnlineUsers";
 
 export default function OnlineUsers() {
-    const { members, guests, loading } = useOnlineUsers();
-
-    if (loading) return <p>Loading online users…</p>;
-
+    const { members, guests } = useOnlineUsers();
     return (
         <div className="rounded p-4 bg-neutral-800">
             <h3 className="text-lg font-semibold mb-2">Who’s Online ( active last 5 minutes )</h3>

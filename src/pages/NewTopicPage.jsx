@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
-
+import { useEffect } from "react";
 export default function NewTopicPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -11,11 +11,33 @@ export default function NewTopicPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [forum, setForum] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    api(`/forums/${id}`)
+      .then(setForum)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return <p className="text-neutral-400">Loading...</p>;
+  }
 
   if (!user) {
     return (
-      <div className="text-red-500 bg-neutral-900 p-6 rounded shadow">
+      <div className="text-sm text-red-500 bg-yellow-950/20 border border-yellow-900/40 rounded p-4">
         You must be logged in to create a topic.
+      </div>
+    );
+  }
+
+  if (!forum?.permissions?.canPostTopic && !user?.group?.isStaff) {
+    return (
+      <div className="text-sm text-red-500 bg-yellow-950/20 border border-yellow-900/40 rounded p-4">
+        You do not have permission to create topics in this forum.
       </div>
     );
   }
