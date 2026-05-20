@@ -2,6 +2,7 @@ import { roleColors } from "../utils/roleColors";
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import OnlineUsers from "./OnlineUsers";
+import WhosOnline from "./WhosOnline";
 export default function Footer() {
   const [countTopics, setCountTopics] = useState(null);
   const [countPosts, setCountPosts] = useState(null);
@@ -55,7 +56,8 @@ export default function Footer() {
           <span className="uppercase text-sm">Latest member</span>
         </div>
       </div>
-      <OnlineUsers />
+      {/* <OnlineUsers /> */}
+      <WhosOnline />
       <div className="flex flex-wrap justify-center gap-6 text-sm">
         <span>
           <b className={roleColors.admin}>Admin</b>
